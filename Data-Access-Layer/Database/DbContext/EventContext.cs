@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Data_Access_Layer.Database.DbContext
+namespace Data_Access_Layer.Database
 {
-    public class DbContext :IdentityDbContext<ApplicationUser>
+    public class EventContext :IdentityDbContext<ApplicationUser>
     {
-        public DbContext(DbContextOptions<DbContext> options) : base(options)
+        public EventContext(DbContextOptions<EventContext> options) : base(options)
         {
         }
 
@@ -27,7 +27,8 @@ namespace Data_Access_Layer.Database.DbContext
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfigurationsFromAssembly(typeof(DbContext).Assembly);
+            base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(typeof(EventContext).Assembly);
         }
     }
 }

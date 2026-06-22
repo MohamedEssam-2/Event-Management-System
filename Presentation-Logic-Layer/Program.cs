@@ -1,4 +1,4 @@
-
+using Data_Access_Layer;
 namespace Presentation_Logic_Layer
 {
     public class Program
@@ -12,7 +12,8 @@ namespace Presentation_Logic_Layer
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(); 
+            builder.Services.DALServices(builder.Configuration);
 
             var app = builder.Build();
 
