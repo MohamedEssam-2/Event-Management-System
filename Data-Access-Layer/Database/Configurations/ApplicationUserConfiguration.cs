@@ -17,16 +17,9 @@ namespace Data_Access_Layer.Database.Configurations
             options.Property(u => u.FullName).IsRequired().HasMaxLength(400);
             options.Property(u => u.Age).IsRequired(false);
             options.Property(u => u.Phone_Number).IsRequired(false).HasMaxLength(20);
-            
-            options.HasMany(e=>e.Events)
-                   .WithOne(e => e.Organizer)
-                   .HasForeignKey(e => e.OrganizerId)
-                   .OnDelete(DeleteBehavior.Cascade);
 
-            options.HasMany(u => u.Registrations)
-                   .WithOne(r => r.User)
-                   .HasForeignKey(r => r.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+
+
         }
     }
 }

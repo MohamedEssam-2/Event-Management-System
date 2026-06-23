@@ -16,12 +16,37 @@ namespace Data_Access_Layer.Database.Configurations
            options.HasOne(u=>u.User)
                   .WithMany(r => r.Registrations)
                   .HasForeignKey(r => r.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
 
             options.HasOne(e => e.Event)
                    .WithMany(r => r.Registrations)
                    .HasForeignKey(r => r.EventId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
+
+           options.HasKey(r => r.Id);
+
+            options.HasIndex(r => new { r.UserId, r.EventId })
+                   .IsUnique();
+
+            options.Property(r => r.RegistrationDate)
+                   .HasDefaultValueSql("GETDATE()");
+
+
+
+            options.Property(x => x.CreatedAt)
+       .HasDefaultValueSql("GETDATE()");
+
+            options.Property(x => x.UpdatedAt)
+                   .IsRequired(false);
+
+            options.Property(x => x.DeletedDate)
+                   .IsRequired(false);
+
+            options.Property(x => x.IsDeleted)
+                   .HasDefaultValue(false);
+
+            options.HasIndex(r => r.UserId);
+            options.HasIndex(r => r.EventId);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Data_Access_Layer.Models
         public string FullName { get; set; } = null!;
         public int? Age { get; set; }
         public string? Phone_Number { get; set; }
-        public ICollection<Event>? Events { get; set; } = new List<Event>();
-        public ICollection<Registration>? Registrations { get; set; } = new List<Registration>();
+        public ICollection<Event> Events { get; set; } = new List<Event>();
+        public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
     }
 }

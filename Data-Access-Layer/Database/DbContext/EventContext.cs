@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Data_Access_Layer.Models;
@@ -17,7 +18,6 @@ namespace Data_Access_Layer.Database
         {
         }
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
 
         public DbSet<Category> Categories { get; set; } = null!;
 
@@ -28,7 +28,15 @@ namespace Data_Access_Layer.Database
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
             builder.ApplyConfigurationsFromAssembly(typeof(EventContext).Assembly);
+
+            builder.Entity<Event>().HasQueryFilter(x => !x.IsDeleted);
+
+            builder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
+
+            builder.Entity<Registration>().HasQueryFilter(x => !x.IsDeleted);
+
         }
     }
 }

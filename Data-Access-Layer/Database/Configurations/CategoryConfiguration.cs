@@ -17,11 +17,18 @@ namespace Data_Access_Layer.Database.Configurations
            
             options.Property(options => options.Name).IsRequired().HasMaxLength(200);
 
+            options.Property(x => x.CreatedAt)
+       .HasDefaultValueSql("GETDATE()");
 
-            options.HasMany(c => c.Events)
-                   .WithOne(e => e.Category)
-                   .HasForeignKey(e => e.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            options.Property(x => x.UpdatedAt)
+                   .IsRequired(false);
+
+            options.Property(x => x.DeletedDate)
+                   .IsRequired(false);
+
+            options.Property(x => x.IsDeleted)
+                   .HasDefaultValue(false);
+
 
         }
     }

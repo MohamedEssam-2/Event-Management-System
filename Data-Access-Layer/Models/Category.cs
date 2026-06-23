@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Data_Access_Layer.Models
 {
-    public class Category
+    public class Category : BaseEntity<int>
     {
-        public int Id { get; set; }
+       
         public string Name { get; set; } = null!;
-        public ICollection<Event>? Events { get; set; } = new List<Event>();
+        public ICollection<Event> Events { get; set; } = new List<Event>();
 
     }
 }

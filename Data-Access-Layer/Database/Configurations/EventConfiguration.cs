@@ -19,23 +19,35 @@ namespace Data_Access_Layer.Database.Configurations
 
             options.Property(e => e.Location).IsRequired().HasMaxLength(300);
 
-            options.Property(p=>p.Price).HasColumnType("decimal(10,2)").HasDefaultValue(0);
+            options.Property(p=>p.Price).HasColumnType("decimal(10,2)").HasDefaultValue(0m);
 
 
             options.HasOne(c=>c.Category)
                    .WithMany(e => e.Events)
                    .HasForeignKey(e => e.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
 
-            options.HasMany(r=>r.Registrations)
-                .WithOne(r => r.Event)
-                .HasForeignKey(r => r.EventId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             options.HasOne(o=>o.Organizer)
                 .WithMany(e => e.Events)
                 .HasForeignKey(e => e.OrganizerId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            options.Property(x => x.CreatedAt)
+       .HasDefaultValueSql("GETDATE()");
+
+            options.Property(x => x.UpdatedAt)
+                   .IsRequired(false);
+
+            options.Property(x => x.DeletedDate)
+                   .IsRequired(false);
+
+            options.Property(x => x.IsDeleted)
+                   .HasDefaultValue(false);
+
+            options.HasIndex(e => e.CategoryId);
+            options.HasIndex(e => e.OrganizerId);
 
         }
     }

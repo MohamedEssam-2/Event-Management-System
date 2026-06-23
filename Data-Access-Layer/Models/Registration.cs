@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Data_Access_Layer.Models
 {
-    public class Registration
+    public class Registration : BaseEntity<int>
     {
-        public int Id { get; set; }
+   
         public DateTime? RegistrationDate { get; set; }
 
         // Foreign key to Event
