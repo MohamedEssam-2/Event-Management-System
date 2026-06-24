@@ -12,7 +12,7 @@ namespace Data_Access_Layer.Repository.Interface
         {
           public Task<List<TEntity>> GetAll();
           public Task<TEntity?> GetById(TKey id);
-          public Task Create(TEntity entity);
+          public Task<TEntity> Create(TEntity entity);
           public void Update(TEntity entity);
           public void Delete(TEntity entity);
         }

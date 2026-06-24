@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Data_Access_Layer.Database;
 using Data_Access_Layer.Models;
+using Data_Access_Layer.Repository.Implementation;
+using Data_Access_Layer.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +35,11 @@ namespace Data_Access_Layer
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<EventContext>();
-          
+
+            Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+
 
             return Services;
         }

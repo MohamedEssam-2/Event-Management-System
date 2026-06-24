@@ -1,3 +1,4 @@
+using Business_Logic_Layer;
 using Data_Access_Layer;
 namespace Presentation_Logic_Layer
 {
@@ -14,6 +15,7 @@ namespace Presentation_Logic_Layer
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(); 
             builder.Services.DALServices(builder.Configuration);
+            builder.Services.BLL_Registration(builder.Configuration);
 
             var app = builder.Build();
 

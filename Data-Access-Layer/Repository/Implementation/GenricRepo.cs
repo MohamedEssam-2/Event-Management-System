@@ -12,9 +12,10 @@ namespace Data_Access_Layer.Repository.Implementation
 {
     public class GenricRepo<TEntity, TKey>(EventContext _context) : IGenericRepo<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
-        public async Task Create(TEntity entity)
+        public async Task<TEntity> Create(TEntity entity)
         {
-            await _context.Set<TEntity>().AddAsync(entity);
+             await _context.Set<TEntity>().AddAsync(entity);
+            return entity;
         }
 
         public void Delete(TEntity entity)
