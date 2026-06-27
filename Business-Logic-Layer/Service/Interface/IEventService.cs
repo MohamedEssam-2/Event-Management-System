@@ -12,5 +12,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<List<ReadAllEventDTO>> GetAllEvents();
         public Task<ReadAllEventDTO> GetEventById(int id);
         public Task<ReadAllEventDTO> CreateEvent(CreateEventDTO eventDTO);
+        public Task<bool> DeleteEvent(int id);
+        public Task<ReadAllEventDTO> UpdateEvent(UpdateEventDTO eventDTO);
     }
 }

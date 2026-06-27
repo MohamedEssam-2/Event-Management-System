@@ -29,5 +29,20 @@ namespace Presentation_Logic_Layer.Controllers
             var createdEvent = await _service.CreateEvent(eventDTO);
             return Ok(createdEvent);
         }
+
+        [HttpPatch("Update")]
+        public async Task<ActionResult<ReadAllEventDTO>> Update(UpdateEventDTO eventDTO)
+        {
+            var updatedEvent = await _service.UpdateEvent(eventDTO);
+            return Ok(updatedEvent);
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<ActionResult<bool>> Delete(int id)
+        {
+            var deleted = await _service.DeleteEvent(id);
+            return Ok(deleted);
+        }
+
     }
 }

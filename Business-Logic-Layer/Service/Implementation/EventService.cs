@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO;
+using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
@@ -17,18 +18,27 @@ namespace Business_Logic_Layer.Service.Implementation
         {
             var entity = _mapper.Map<Event>(eventDTO);
             var CreateEntity = await _unitOfWork.GetRepository<Event, int>().Create(entity);
-            if(CreateEntity is null)
-            {
-                throw new Exception("Event Not Created");
-            }
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ReadAllEventDTO>(CreateEntity);
+        }
+
+        public async Task<bool> DeleteEvent(int id)
+        {
+           var entity=await _unitOfWork.GetRepository<Event,int>().GetById(id);
+            if (entity is null) 
+            {
+                throw new EventNotFoundException(id);
+            }
+            entity.IsDeleted = true;
+            _unitOfWork.GetRepository<Event, int>().Delete(entity);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+
         }
 
         public async Task<List<ReadAllEventDTO>> GetAllEvents()
         {
             var Events=await _unitOfWork.GetRepository<Event, int>().GetAll();
-            if(Events == null)
+            if (!Events.Any())
             {
                 throw new Exception("No Events Found");
             }
@@ -39,12 +49,53 @@ namespace Business_Logic_Layer.Service.Implementation
         public async Task<ReadAllEventDTO> GetEventById(int id)
         {
          var Evetns = await _unitOfWork.GetRepository<Event, int>().GetById(id);
-            if (Evetns == null)
+            if (Evetns is null)
             {
-                throw new Exception("Event Not Found");
+                throw new EventNotFoundException(id);
             }
             var EventDTO =  _mapper.Map<ReadAllEventDTO>(Evetns);
             return EventDTO;
+        }
+
+        public async Task<ReadAllEventDTO> UpdateEvent(UpdateEventDTO eventDTO)
+        {
+            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(eventDTO.Id);
+            if (entity is null)
+            {
+                throw new EventNotFoundException(eventDTO.Id);
+            }
+            if (entity.IsDeleted)
+            {
+                throw new EventDeletedException(eventDTO.Id);
+            }
+
+            if (eventDTO.Name != null)
+                entity.Name = eventDTO.Name;
+
+            if (eventDTO.Date.HasValue)
+                entity.Date = eventDTO.Date.Value;
+
+            if (eventDTO.Location != null)
+                entity.Location = eventDTO.Location;
+
+            if (eventDTO.MaxAttendees.HasValue)
+                entity.MaxAttendees = eventDTO.MaxAttendees.Value;
+
+            if (eventDTO.Price.HasValue)
+                entity.Price = eventDTO.Price.Value;
+
+            if (eventDTO.CategoryId.HasValue)
+                entity.CategoryId = eventDTO.CategoryId.Value;
+
+            if (eventDTO.OrganizerId != null)
+                entity.OrganizerId = eventDTO.OrganizerId;
+
+            //entity.UpdatedBy
+
+            _unitOfWork.GetRepository<Event, int>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<ReadAllEventDTO>(entity);
         }
     }
 }

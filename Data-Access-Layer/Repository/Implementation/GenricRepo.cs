@@ -20,7 +20,7 @@ namespace Data_Access_Layer.Repository.Implementation
 
         public void Delete(TEntity entity)
         {
-            _context.Set<TEntity>().Remove(entity);
+            _context.Set<TEntity>().Update(entity);
         }
 
         public async Task<List<TEntity>> GetAll()
