@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business_Logic_Layer.DTO
+namespace Business_Logic_Layer.DTO.EventDTO
 {
     public class ReadAllEventDTO
     {
@@ -16,5 +16,5 @@ namespace Business_Logic_Layer.DTO
         public decimal Price { get; set; }
 
 
-        }
+    }
 }

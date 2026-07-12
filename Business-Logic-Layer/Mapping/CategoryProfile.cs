@@ -4,17 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Business_Logic_Layer.DTO.EventDTO;
+using Business_Logic_Layer.DTO.CategoryDTO;
 using Data_Access_Layer.Models;
 
 namespace Business_Logic_Layer.Mapping
 {
-    public class EventProfile:Profile
+    public class CategoryProfile  :Profile
     {
-        public EventProfile()
+        public CategoryProfile()
         {
-            CreateMap<Event,ReadAllEventDTO>();
-            CreateMap<CreateEventDTO, Event>();
+            CreateMap<Category,CategoryDTO>();
         }
     }
 }

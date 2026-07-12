@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Business_Logic_Layer.DTO;
+using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
@@ -18,6 +18,7 @@ namespace Business_Logic_Layer.Service.Implementation
         {
             var entity = _mapper.Map<Event>(eventDTO);
             var CreateEntity = await _unitOfWork.GetRepository<Event, int>().Create(entity);
+            //CreateEntity.CreatedBy = eventDTO.CreatedBy;
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ReadAllEventDTO>(CreateEntity);
         }

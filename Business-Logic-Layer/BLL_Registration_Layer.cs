@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.Service.Implementation;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ namespace Business_Logic_Layer
         {
             Services.AddAutoMapper(x => { }, typeof(ServiceLayerAssemblyReference).Assembly);
             Services.AddScoped<IEventService, EventService>();
+            Services.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
             return Services;
         }
     }

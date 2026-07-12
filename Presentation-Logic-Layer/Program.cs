@@ -1,5 +1,6 @@
 using Business_Logic_Layer;
 using Data_Access_Layer;
+
 namespace Presentation_Logic_Layer
 {
     public class Program
@@ -19,6 +20,8 @@ namespace Presentation_Logic_Layer
 
             var app = builder.Build();
 
+
+            app.UseMiddleware<Presentation_Logic_Layer.Middleware.Middleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -32,6 +35,7 @@ namespace Presentation_Logic_Layer
 
 
             app.MapControllers();
+
 
             app.Run();
         }

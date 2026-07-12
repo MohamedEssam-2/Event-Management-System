@@ -1,4 +1,4 @@
-﻿using Business_Logic_Layer.DTO;
+﻿using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 
