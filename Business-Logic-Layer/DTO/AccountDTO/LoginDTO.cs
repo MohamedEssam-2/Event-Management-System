@@ -10,7 +10,7 @@ namespace Business_Logic_Layer.DTO.AccountDTO
     public class LoginDTO
     {
         [Required]
-        public int Email { get; set; }
+        public string Email { get; set; }
         [Required]
         public string Password { get; set; } = null!;
     }

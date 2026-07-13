@@ -31,7 +31,7 @@ namespace Presentation_Logic_Layer.Middleware
             var response = new ErrorToReturn
             {
                 StatusCode = statusCode,
-                ErrorMessage = ex.Message
+                ErrorMessage =  ex.ToString()
             };
 
             var json = JsonSerializer.Serialize(response);

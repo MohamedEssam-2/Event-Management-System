@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.Exceptions
 {
-    public class BadRequestException(List<string> errors) : AppException("Bad Request", (int)HttpStatusCode.BadRequest)
+    public class NotFoundException(string message) : AppException(message, (int)HttpStatusCode.NotFound)
     {
-        public List<string> Errors { get; } = errors;
     }
 }

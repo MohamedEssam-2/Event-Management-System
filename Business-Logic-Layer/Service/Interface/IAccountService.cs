@@ -10,6 +10,6 @@ namespace Business_Logic_Layer.Service.Interface
     public interface IAccountService
     {
         public Task<UserDTO> Register(RegisterDTO registerDTO);
-        //public Task<UserDTO> Login(LoginDTO loginDTO);
+        public Task<UserDTO> Login(LoginDTO loginDTO);
     }
 }

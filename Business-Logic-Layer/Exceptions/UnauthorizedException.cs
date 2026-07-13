@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.Exceptions
 {
-    public class BadRequestException(List<string> errors) : AppException("Bad Request", (int)HttpStatusCode.BadRequest)
+    public class UnauthorizedException(string message): AppException(message, (int)HttpStatusCode.Unauthorized)
     {
-        public List<string> Errors { get; } = errors;
     }
+    
 }

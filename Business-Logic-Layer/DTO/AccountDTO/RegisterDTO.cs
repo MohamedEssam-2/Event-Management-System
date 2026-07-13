@@ -17,7 +17,7 @@ namespace Business_Logic_Layer.DTO.AccountDTO
         public string Password { get; set; } = null!; 
 
         public int? Age { get; set; }
-        [Phone]
-        public string? Phone_Number { get; set; }
+        //[Phone]
+        //public string? Phone_Number { get; set; }
     }
 }

@@ -17,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class AccountService(UserManager<ApplicationUser> _userManager , IConfiguration _configuration, IOptions<JwtOptions> _jwtoptions) : IAccountService
+    public class AccountService(UserManager<ApplicationUser> _userManager , IOptions<JwtOptions> _jwtoptions) : IAccountService
     {
         public async Task<UserDTO> Register(RegisterDTO registerDTO)
         {
@@ -27,7 +27,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 UserName = registerDTO.Email,
                 Email = registerDTO.Email,
                 Age = registerDTO.Age,
-                PhoneNumber = registerDTO.Phone_Number
+                //PhoneNumber = registerDTO.Phone_Number
             };
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
             if (result.Succeeded)
@@ -53,6 +53,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 new Claim(ClaimTypes.NameIdentifier,user.Id!),
                 new Claim(ClaimTypes.Email,user.Email!),
                 new Claim(ClaimTypes.Name,user.FullName!),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -66,11 +67,31 @@ namespace Business_Logic_Layer.Service.Implementation
                 issuer: jwt.Issuer,
                 audience: jwt.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(jwt.DurationInHourse),
+                expires: DateTime.Now.AddHours(jwt.DurationInHourse),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<UserDTO> Login(LoginDTO loginDTO)
+        {
+           var user = await _userManager.FindByEmailAsync(loginDTO.Email);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Invalid email or password ");
+            }
+            var result =await _userManager.CheckPasswordAsync(user, loginDTO.Password);
+            if (!result)
+            {
+                throw new UnauthorizedException("Invalid email or password");
+            }
+            return new UserDTO()
+            {
+                Email = user.Email!,
+                DispalyName = user.FullName,
+                Token = await CreateTokenAsync(user),
+            };
+        }
     }
+
 }
