@@ -17,7 +17,7 @@ namespace Business_Logic_Layer
         {
             Services.AddAutoMapper(x => { }, typeof(ServiceLayerAssemblyReference).Assembly);
             Services.AddScoped<IEventService, EventService>();
-            Services.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
+            //Services.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
             Services.AddScoped<IAccountService, AccountService>();
             return Services;
         }
