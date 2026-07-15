@@ -9,10 +9,10 @@ namespace Business_Logic_Layer.Service.Interface
 {
     public interface ICategoryService
     {
-        public Task<List<CategoryDTO>> GetAllCategories();
-        public Task<CategoryDTO> CreateCategory(CategoryDTO categoryDTO);
-        public Task<CategoryDTO> GetById(int id);   
-        public Task<bool> DeleteCategory(int id);
-        public Task<CategoryDTO>UpdateCat(CategoryDTO categoryDTO);
+        public Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories();
+        public Task<ServiceResponse<DetailsCategoryDTO>> GetById(int id);   
+        public Task<ServiceResponse<bool>> DeleteCategory(int id);
+        public Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO);
+        public Task<ServiceResponse<bool>> UpdateCat(int id ,CategoryDTO categoryDTO);
     }
 }

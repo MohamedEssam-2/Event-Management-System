@@ -1,0 +1,42 @@
+﻿using Business_Logic_Layer.DTO.CategoryDTO;
+using Business_Logic_Layer.Service.Interface;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Presentation_Logic_Layer.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CategoryController(ICategoryService _categoryService) :ControllerBase
+    {
+        [HttpGet("GetAllCategory")]
+        public async Task <IActionResult> GetAllCategories()
+        {
+            var categories =await _categoryService.GetAllCategories();
+            return Ok(categories);
+        }
+        [HttpGet("{categoryId:int}")]
+        public async Task<IActionResult> GetCategoryById(int categoryId)
+        {
+            var category = await _categoryService.GetById(categoryId);
+            return Ok(category);
+        }
+        [HttpPost]
+        public async Task <IActionResult> CreateCategory([FromForm] CategoryDTO categoryDTO)
+        {
+            var createdCategory = await _categoryService.CreateCategory(categoryDTO);
+            return Ok(createdCategory);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
+        {
+            var deleted = await _categoryService.DeleteCategory(categoryId);
+            return Ok(deleted);
+        }
+        [HttpPatch]
+        public async Task<IActionResult> UpdateCategory(int categoryId, [FromForm] CategoryDTO categoryDTO)
+        {
+            var updated = await _categoryService.UpdateCat(categoryId, categoryDTO);
+            return Ok(updated);
+        }
+    }
+}

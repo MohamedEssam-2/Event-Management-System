@@ -58,16 +58,16 @@ namespace Business_Logic_Layer.Service.Implementation
             return EventDTO;
         }
 
-        public async Task<ReadAllEventDTO> UpdateEvent(UpdateEventDTO eventDTO)
+        public async Task<ReadAllEventDTO> UpdateEvent(int id, UpdateEventDTO eventDTO)
         {
-            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(eventDTO.Id);
+            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(id);
             if (entity is null)
             {
-                throw new EventNotFoundException(eventDTO.Id);
+                throw new EventNotFoundException(id);
             }
             if (entity.IsDeleted)
             {
-                throw new EventDeletedException(eventDTO.Id);
+                throw new EventDeletedException(id);
             }
 
             if (eventDTO.Name != null)
@@ -84,12 +84,6 @@ namespace Business_Logic_Layer.Service.Implementation
 
             if (eventDTO.Price.HasValue)
                 entity.Price = eventDTO.Price.Value;
-
-            if (eventDTO.CategoryId.HasValue)
-                entity.CategoryId = eventDTO.CategoryId.Value;
-
-            if (eventDTO.OrganizerId != null)
-                entity.OrganizerId = eventDTO.OrganizerId;
 
             //entity.UpdatedBy
 

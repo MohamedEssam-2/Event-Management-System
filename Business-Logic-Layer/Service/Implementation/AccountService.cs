@@ -19,7 +19,7 @@ namespace Business_Logic_Layer.Service.Implementation
 {
     public class AccountService(UserManager<ApplicationUser> _userManager , IOptions<JwtOptions> _jwtoptions) : IAccountService
     {
-        public async Task<UserDTO> Register(RegisterDTO registerDTO)
+        public async Task<MessageDTO> Register(RegisterDTO registerDTO)
         {
             var user = new ApplicationUser
             {
@@ -33,11 +33,15 @@ namespace Business_Logic_Layer.Service.Implementation
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
             if (result.Succeeded)
             {
-                return new UserDTO()
+                //return new UserDTO()
+                //{
+                //    Email = user.Email!,
+                //    DispalyName = user.FullName,
+                //    Token = await CreateTokenAsync(user),
+                //};
+                return new MessageDTO
                 {
-                    Email = user.Email!,
-                    DispalyName = user.FullName,
-                    Token = await CreateTokenAsync(user),
+                    Message = "User registered successfully."
                 };
             }
             else

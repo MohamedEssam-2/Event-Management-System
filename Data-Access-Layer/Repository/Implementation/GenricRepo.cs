@@ -20,6 +20,7 @@ namespace Data_Access_Layer.Repository.Implementation
 
         public void Delete(TEntity entity)
         {
+            entity.IsDeleted = true;
             _context.Set<TEntity>().Update(entity);
         }
 

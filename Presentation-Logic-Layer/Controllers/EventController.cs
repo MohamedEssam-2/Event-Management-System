@@ -31,9 +31,9 @@ namespace Presentation_Logic_Layer.Controllers
         }
 
         [HttpPatch("Update")]
-        public async Task<ActionResult<ReadAllEventDTO>> Update(UpdateEventDTO eventDTO)
+        public async Task<ActionResult<ReadAllEventDTO>> Update(int id ,UpdateEventDTO eventDTO)
         {
-            var updatedEvent = await _service.UpdateEvent(eventDTO);
+            var updatedEvent = await _service.UpdateEvent(id,eventDTO);
             return Ok(updatedEvent);
         }
 

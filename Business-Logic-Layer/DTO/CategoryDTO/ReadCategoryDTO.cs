@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.DTO.CategoryDTO
 {
-    public class CategoryDTO
+    public class ReadCategoryDTO
     {
-        public string Name { get; set; } = null!;
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

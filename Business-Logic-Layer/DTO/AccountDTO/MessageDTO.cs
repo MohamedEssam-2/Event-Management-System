@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business_Logic_Layer.DTO.CategoryDTO
+namespace Business_Logic_Layer.DTO.AccountDTO
 {
-    public class CategoryDTO
+    public class MessageDTO
     {
-        public string Name { get; set; } = null!;
+        public string Message { get; set; }
     }
 }

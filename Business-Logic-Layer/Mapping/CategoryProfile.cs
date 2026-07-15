@@ -13,7 +13,9 @@ namespace Business_Logic_Layer.Mapping
     {
         public CategoryProfile()
         {
-            CreateMap<Category,CategoryDTO>();
+            CreateMap<Category,CategoryDTO>().ReverseMap();
+            CreateMap<Category, ReadCategoryDTO>().ReverseMap();
+            CreateMap<Category, DetailsCategoryDTO>().ReverseMap();
         }
     }
 }

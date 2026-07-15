@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer
 {
-    public class ApiResponse<T>
+    public class ServiceResponse<T>
     {
         public bool Success { get; set; }
 

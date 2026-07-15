@@ -19,6 +19,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<IEventService, EventService>();
             //Services.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
             Services.AddScoped<IAccountService, AccountService>();
+            Services.AddScoped<ICategoryService, CategoryService>();
             return Services;
         }
     }
