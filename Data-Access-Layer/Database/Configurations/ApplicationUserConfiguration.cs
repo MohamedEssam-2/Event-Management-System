@@ -16,7 +16,8 @@ namespace Data_Access_Layer.Database.Configurations
         {
             options.Property(u => u.FullName).IsRequired().HasMaxLength(400);
             options.Property(u => u.Age).IsRequired(false);
-            options.Property(u => u.Phone_Number).IsRequired(false).HasMaxLength(20);
+            //options.Property(u => u.Phone_Number).IsRequired(false).HasMaxLength(20);
+            options.Property(u=>u.PhoneNumber).IsRequired(false).HasMaxLength(15);
 
 
 

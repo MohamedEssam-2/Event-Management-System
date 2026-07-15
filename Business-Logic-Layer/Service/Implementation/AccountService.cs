@@ -28,6 +28,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 Email = registerDTO.Email,
                 Age = registerDTO.Age,
                 //PhoneNumber = registerDTO.Phone_Number
+                
             };
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
             if (result.Succeeded)

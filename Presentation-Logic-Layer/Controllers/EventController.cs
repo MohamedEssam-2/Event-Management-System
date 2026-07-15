@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation_Logic_Layer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class EventController(IEventService _service):ControllerBase
     {
         [HttpGet("GetAll")]

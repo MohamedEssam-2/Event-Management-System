@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Database\Migration\" />
+    <Compile Remove="Database\Migration\**" />
+    <EmbeddedResource Remove="Database\Migration\**" />
+    <None Remove="Database\Migration\**" />
   </ItemGroup>
 
   <ItemGroup>

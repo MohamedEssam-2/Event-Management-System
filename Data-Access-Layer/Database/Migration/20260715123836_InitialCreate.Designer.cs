@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Data_Access_Layer.Database.Migrations
+namespace Data_Access_Layer.Database.Migration
 {
     [DbContext(typeof(EventContext))]
-    [Migration("20260623213848_InitialCreate")]
+    [Migration("20260715123836_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -70,14 +70,11 @@ namespace Data_Access_Layer.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Phone_Number")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
