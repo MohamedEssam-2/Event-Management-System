@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,7 +52,14 @@ namespace Business_Logic_Layer.Service.Implementation
         public async Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories()
         {
             var category=await _unitOfWork.GetRepository<Category, int>().GetAll();
-
+            if (category == null)
+            {
+                return new ServiceResponse<List<ReadCategoryDTO>>
+                {
+                    Success= false,
+                    Message = "Cant Find Any Category ."
+                };
+            }
                 var categoryDTO = _mapper.Map<List<ReadCategoryDTO>>(category);
                 return new ServiceResponse<List<ReadCategoryDTO>>
                 {

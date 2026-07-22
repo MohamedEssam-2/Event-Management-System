@@ -6,16 +6,32 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.Exceptions;
+using Business_Logic_Layer.Exceptions.CategoryExceptions;
+using Business_Logic_Layer.Exceptions.UserExceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
+using Microsoft.AspNetCore.Identity;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper) : IEventService
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager) : IEventService
     {
         public async Task<ReadAllEventDTO> CreateEvent(CreateEventDTO eventDTO)
         {
+
+            var user = await _userManager.FindByIdAsync(eventDTO.OrganizerId);
+            if (user == null)
+            {
+                throw new UserNotFoundException(eventDTO.OrganizerId);
+            }
+
+            var Category =await _unitOfWork.GetRepository<Category,int>().GetById(eventDTO.CategoryId);
+            if (Category == null)
+            {
+                throw new CategoryNotFoundException(eventDTO.CategoryId);
+            }
+
             var entity = _mapper.Map<Event>(eventDTO);
             var CreateEntity = await _unitOfWork.GetRepository<Event, int>().Create(entity);
             //CreateEntity.CreatedBy = eventDTO.CreatedBy;

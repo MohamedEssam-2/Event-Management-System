@@ -10,7 +10,6 @@ namespace Business_Logic_Layer.DTO.EventDTO
     public class UpdateEventDTO
     {
 
-
         public string? Name { get; set; }
 
         public DateTime? Date { get; set; }

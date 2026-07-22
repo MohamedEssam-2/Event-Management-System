@@ -18,6 +18,7 @@ namespace Business_Logic_Layer.DTO.EventDTO
         [Required(ErrorMessage = "Location must be Enterd here .")]
         public string Location { get; set; } = null!;
 
+        [Range(1,10000)]
         public int? MaxAttendees { get; set; }
 
         [Required(ErrorMessage = "Price must be Enterd here .")]
