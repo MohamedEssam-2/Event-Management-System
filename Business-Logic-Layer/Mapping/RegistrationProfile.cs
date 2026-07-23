@@ -13,7 +13,8 @@ namespace Business_Logic_Layer.Mapping
     {
         public RegistrationProfile()
         {
-          CreateMap<Registration,CreateRegistrationDTO>().ReverseMap();
+          CreateMap<Registration,RegistrationDTO>().ReverseMap();
+          CreateMap<Registration, ReadAllRegistrationDTO>().ReverseMap();
         }
     }
 }
