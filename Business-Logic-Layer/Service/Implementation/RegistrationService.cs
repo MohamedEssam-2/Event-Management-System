@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager ) : IRegistrationService
+    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager , ICurrentUserService _currentUser) : IRegistrationService
     {
         public async Task<ServiceResponse<int>> CreateRegistration(RegistrationDTO registrationDTO)
         {
@@ -37,8 +37,9 @@ namespace Business_Logic_Layer.Service.Implementation
             }
 
             var registration = _mapper.Map<Registration>(registrationDTO);
+            registration.CreatedBy = _currentUser.FullName;
             registration.CreatedAt = DateTime.Now;
-            var registrationRepo=await _unitOfWork.GetRepository<Registration,int>().Create(registration);
+            await _unitOfWork.GetRepository<Registration,int>().Create(registration);
             await _unitOfWork.SaveChangesAsync();
             return new ServiceResponse<int>
             {
@@ -57,7 +58,8 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 return new ServiceResponse<List<ReadAllRegistrationDTO>>
                 {
-                    Success = false,
+                    Success = true,
+                    Data = [],
                     Message = "No Registration Found"
                 };
             }
@@ -100,7 +102,9 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 registration.RegistrationDate = registrationDTO.RegistrationDate.Value;
             }
+            registration.UpdatedBy = _currentUser.FullName;
             registration.UpdatedAt = DateTime.Now;
+            _unitOfWork.GetRepository<Registration, int>().Update(registration);
             await _unitOfWork.SaveChangesAsync();
             return new ServiceResponse<bool>
             {
@@ -113,11 +117,13 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<ServiceResponse<bool>> DeleteRegistration(int id)
         {
-            var registration = _unitOfWork.GetRepository<Registration, int>().GetById(id).Result;
+            var registration = await _unitOfWork.GetRepository<Registration, int>().GetById(id);
             if (registration is null)
             {
                 throw new RegistrationNotFoundException(id);
             }
+            registration.DeletedBy = _currentUser.FullName;
+            registration.DeletedDate = DateTime.Now;
            _unitOfWork.GetRepository<Registration, int>().Delete(registration);
             await _unitOfWork.SaveChangesAsync();
             return new ServiceResponse<bool>

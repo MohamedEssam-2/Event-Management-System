@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Data_Access_Layer.Database;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
+using Data_Access_Layer.Specifications;
+using Data_Access_Layer.Specifications.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access_Layer.Repository.Implementation
@@ -24,11 +26,6 @@ namespace Data_Access_Layer.Repository.Implementation
             _context.Set<TEntity>().Update(entity);
         }
 
-        public async Task<List<TEntity>> GetAll()
-        {
-            return await _context.Set<TEntity>().ToListAsync();
-        }
-
         public async Task<TEntity?> GetById(TKey id)
         {
           return await _context.Set<TEntity>().FindAsync(id);
@@ -37,6 +34,17 @@ namespace Data_Access_Layer.Repository.Implementation
         public void Update(TEntity entity)
         {
             _context.Set<TEntity>().Update(entity);
+        }
+
+        public async Task<List<TEntity>> GetAll()
+        {
+            return await _context.Set<TEntity>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAll(ISpecification<TEntity, TKey> spec)
+        {
+            var query = SpecificationEvaluator.CreateQuery(_context.Set<TEntity>(), spec);
+            return await query.ToListAsync();
         }
     }
 }

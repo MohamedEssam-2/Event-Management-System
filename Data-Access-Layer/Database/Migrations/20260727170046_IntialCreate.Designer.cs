@@ -4,6 +4,7 @@ using Data_Access_Layer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access_Layer.Database.Migrations
 {
     [DbContext(typeof(EventContext))]
-    partial class EventContextModelSnapshot : ModelSnapshot
+    [Migration("20260727170046_IntialCreate")]
+    partial class IntialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,6 +121,12 @@ namespace Data_Access_Layer.Database.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -167,6 +176,9 @@ namespace Data_Access_Layer.Database.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -193,6 +205,11 @@ namespace Data_Access_Layer.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(10,2)")
                         .HasDefaultValue(0m);
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

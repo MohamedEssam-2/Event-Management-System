@@ -16,10 +16,13 @@ namespace Business_Logic_Layer
         public static IServiceCollection BLL_Registration(this IServiceCollection Services, IConfiguration _configuration)
         {
             Services.AddAutoMapper(x => { }, typeof(ServiceLayerAssemblyReference).Assembly);
-            Services.AddScoped<IEventService, EventService>();
             //Services.Configure<JwtOptions>(_configuration.GetSection("JwtOptions"));
+            Services.AddScoped<IEventService, EventService>();
             Services.AddScoped<IAccountService, AccountService>();
             Services.AddScoped<ICategoryService, CategoryService>();
+            Services.AddScoped<IRegistrationService, RegistrationService>();
+            Services.AddHttpContextAccessor();
+            Services.AddScoped<ICurrentUserService, CurrentUserService>();
             return Services;
         }
     }

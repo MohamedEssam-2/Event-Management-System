@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data_Access_Layer.Enum;
 using Data_Access_Layer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -48,6 +49,8 @@ namespace Data_Access_Layer.Database.Configurations
 
             options.HasIndex(e => e.CategoryId);
             options.HasIndex(e => e.OrganizerId);
+
+            options.Property(e => e.Status).HasDefaultValue(EventStatus.Scheduled);
 
         }
     }

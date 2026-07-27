@@ -14,6 +14,10 @@ namespace Business_Logic_Layer.DTO.EventDTO
         public string Location { get; set; } = null!;
         public int? MaxAttendees { get; set; }
         public decimal Price { get; set; }
+        public int Category_id { get; set; }
+        public string Category_name { get; set; } = null!;
+        //public string? Description { get; set; }
+        //public string? ImageUrl { get; set; }
 
 
     }

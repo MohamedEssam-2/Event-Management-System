@@ -11,11 +11,12 @@ using Business_Logic_Layer.Exceptions.UserExceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
+using Data_Access_Layer.Specifications.EventSpecifications;
 using Microsoft.AspNetCore.Identity;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager) : IEventService
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser) : IEventService
     {
         public async Task<ReadAllEventDTO> CreateEvent(CreateEventDTO eventDTO)
         {
@@ -34,7 +35,8 @@ namespace Business_Logic_Layer.Service.Implementation
 
             var entity = _mapper.Map<Event>(eventDTO);
             var CreateEntity = await _unitOfWork.GetRepository<Event, int>().Create(entity);
-            //CreateEntity.CreatedBy = eventDTO.CreatedBy;
+            CreateEntity.CreatedBy = _currentUser.FullName;
+            CreateEntity.CreatedAt = DateTime.UtcNow;   
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ReadAllEventDTO>(CreateEntity);
         }
@@ -48,13 +50,16 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             entity.IsDeleted = true;
             _unitOfWork.GetRepository<Event, int>().Delete(entity);
+            entity.DeletedBy = _currentUser.FullName;
+            entity.DeletedDate = DateTime.UtcNow;
             return await _unitOfWork.SaveChangesAsync() > 0;
 
         }
 
         public async Task<List<ReadAllEventDTO>> GetAllEvents()
         {
-            var Events=await _unitOfWork.GetRepository<Event, int>().GetAll();
+            var spec = new EventWithCategorySpecification();
+            var Events=await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
             if (!Events.Any())
             {
                 throw new Exception("No Events Found");
@@ -104,6 +109,9 @@ namespace Business_Logic_Layer.Service.Implementation
             //entity.UpdatedBy
 
             _unitOfWork.GetRepository<Event, int>().Update(entity);
+            entity.UpdatedBy = _currentUser.FullName;
+            entity.UpdatedAt = DateTime.UtcNow;
+
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ReadAllEventDTO>(entity);

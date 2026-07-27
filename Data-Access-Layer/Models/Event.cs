@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data_Access_Layer.Enum;
 
 namespace Data_Access_Layer.Models
 {
@@ -14,6 +15,8 @@ namespace Data_Access_Layer.Models
         public string Location { get; set; } = null!;
         public int? MaxAttendees { get; set; }
         public decimal Price { get; set; }
+        public EventStatus Status { get; set; } = EventStatus.Scheduled;
+        public string? ImageUrl { get; set; }
 
         // Foreign key to Category
         public int CategoryId { get; set; }

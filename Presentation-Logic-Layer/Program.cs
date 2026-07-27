@@ -19,7 +19,7 @@ namespace Presentation_Logic_Layer
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(); 
+            //builder.Services.AddSwaggerGen(); 
             builder.Services.DALServices(builder.Configuration);
             builder.Services.BLL_Registration(builder.Configuration);
             builder.Services.AddControllers();
@@ -28,6 +28,13 @@ namespace Presentation_Logic_Layer
 
             builder.Services.AddSwaggerGen(options =>
             {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Event Management System",
+                    Version = "1.0",
+                    Description = "REST API for Event Management System"
+                });
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "Enter your JWT token.\nExample: Bearer eyJhbGciOiJIUzI1NiIs...",

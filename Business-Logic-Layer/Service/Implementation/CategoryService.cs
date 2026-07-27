@@ -11,15 +11,16 @@ using Business_Logic_Layer.Exceptions.CategoryExceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
+using Data_Access_Layer.Specifications.EventSpecifications;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper) : ICategoryService
+    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper , ICurrentUserService _currentUser) : ICategoryService
     {
         public async Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO)
         {
             var category = _mapper.Map<Category>(categoryDTO);
-            //category.CreatedBy = userName;
+            category.CreatedBy = _currentUser.FullName;
             category.CreatedAt = DateTime.UtcNow;
             var CategoryRepo = await _unitOfWork.GetRepository<Category, int>().Create(category);
             await _unitOfWork.SaveChangesAsync();
@@ -39,6 +40,8 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new CategoryNotFoundException(id);
          
                  _unitOfWork.GetRepository<Category, int>().Delete(category);
+                category.DeletedBy = _currentUser.FullName;
+                category.DeletedDate = DateTime.UtcNow;
                 await _unitOfWork.SaveChangesAsync();
                 return new ServiceResponse<bool>
                 {
@@ -51,6 +54,7 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories()
         {
+            
             var category=await _unitOfWork.GetRepository<Category, int>().GetAll();
             if (category == null)
             {
@@ -96,6 +100,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 {
                     category.Name = categoryDTO.Name;
                 }
+                category.UpdatedBy = _currentUser.FullName;
                 category.UpdatedAt = DateTime.UtcNow;
                 _unitOfWork.GetRepository<Category, int>().Update(category);
                 await _unitOfWork.SaveChangesAsync();

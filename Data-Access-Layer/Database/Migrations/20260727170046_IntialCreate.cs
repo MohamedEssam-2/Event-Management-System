@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Data_Access_Layer.Database.Migration
+namespace Data_Access_Layer.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,6 +59,8 @@ namespace Data_Access_Layer.Database.Migration
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, defaultValueSql: "GETDATE()"),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -189,6 +191,8 @@ namespace Data_Access_Layer.Database.Migration
                     Location = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     MaxAttendees = table.Column<int>(type: "int", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false, defaultValue: 0m),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     OrganizerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),

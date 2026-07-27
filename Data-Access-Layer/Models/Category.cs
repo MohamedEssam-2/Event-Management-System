@@ -11,6 +11,8 @@ namespace Data_Access_Layer.Models
        
         public string Name { get; set; } = null!;
         public ICollection<Event> Events { get; set; } = new List<Event>();
+        public string? ImageUrl { get; set; }
+        public string? Description { get; set; }
 
     }
 }
