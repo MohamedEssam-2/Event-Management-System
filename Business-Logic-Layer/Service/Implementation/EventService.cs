@@ -13,6 +13,7 @@ using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
 using Data_Access_Layer.Specifications.EventSpecifications;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
@@ -68,9 +69,12 @@ namespace Business_Logic_Layer.Service.Implementation
             return EventDTO;
         }
 
+        
+
         public async Task<ReadAllEventDTO> GetEventById(int id)
         {
-         var Evetns = await _unitOfWork.GetRepository<Event, int>().GetById(id);
+            var spec = new EventWithCategorySpecification(id);
+         var Evetns = await _unitOfWork.GetRepository<Event, int>().GetById(spec);
             if (Evetns is null)
             {
                 throw new EventNotFoundException(id);
@@ -78,6 +82,8 @@ namespace Business_Logic_Layer.Service.Implementation
             var EventDTO =  _mapper.Map<ReadAllEventDTO>(Evetns);
             return EventDTO;
         }
+
+
 
         public async Task<ReadAllEventDTO> UpdateEvent(int id, UpdateEventDTO eventDTO)
         {
@@ -115,6 +121,18 @@ namespace Business_Logic_Layer.Service.Implementation
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ReadAllEventDTO>(entity);
+        }
+
+        public async Task<List<ReadAllEventDTO>> GetAllEventsInCategory(int categoryid)
+        {
+            var spec = new EventsByCategorySpecification(categoryid);
+            var entity = await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
+            if (!entity.Any())
+            {
+                throw new Exception("No Events Found");
+            }
+            var EventDTO = _mapper.Map<List<ReadAllEventDTO>>(entity);
+            return EventDTO;
         }
     }
 }

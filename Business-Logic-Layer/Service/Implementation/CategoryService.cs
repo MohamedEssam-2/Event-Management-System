@@ -76,7 +76,9 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<ServiceResponse<DetailsCategoryDTO>> GetById(int id)
         {
-            var category = await _unitOfWork.GetRepository<Category, int>().GetById(id);
+
+            var spec = new CategoryWithEventSpecifications(id);
+            var category = await _unitOfWork.GetRepository<Category, int>().GetById(spec);
             if (category == null)
                 throw new CategoryNotFoundException(id);
           

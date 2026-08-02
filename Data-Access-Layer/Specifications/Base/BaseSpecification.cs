@@ -11,7 +11,17 @@ namespace Data_Access_Layer.Specifications.Base
 {
     public abstract class BaseSpecification<TEntity, Tkey> : ISpecification<TEntity, Tkey> where TEntity : BaseEntity<Tkey>
     {
+        public Expression<Func<TEntity, bool>>? Criteria { get; }
+
+        protected BaseSpecification(Expression<Func<TEntity,bool>> criteriaExpression )
+        {
+            Criteria = criteriaExpression;
+        }
+
         public ICollection<Expression<Func<TEntity, object>>> Include_Expressions { get; } = [];
+
+       
+
         public void AddInclude(Expression<Func<TEntity, object>> includeExpression)
         {
             Include_Expressions.Add(includeExpression);

@@ -26,6 +26,16 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(eventById);
         }
 
+
+        [HttpGet("ByCategory/{categoryId:int}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAllByCategory(int categoryId)
+        {
+            var events = await _service.GetAllEventsInCategory(categoryId);
+
+            return Ok(events);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Organizer")]
         public async Task<ActionResult<ReadAllEventDTO>> Create(CreateEventDTO eventDTO)

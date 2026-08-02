@@ -8,20 +8,11 @@ using Data_Access_Layer.Specifications.Base;
 
 namespace Data_Access_Layer.Specifications.EventSpecifications
 {
-    public class EventWithCategorySpecification  :BaseSpecification<Event,int>
+    public class EventsByCategorySpecification : BaseSpecification<Event, int>
     {
-
-        public EventWithCategorySpecification(int id ):base(e=>e.Id==id)
+        public EventsByCategorySpecification(int categoryid) : base(e => e.CategoryId == categoryid)
         {
             AddInclude(e => e.Category);
         }
-        //Get all 
-        public EventWithCategorySpecification(): base(null)
-        {
-            AddInclude(e => e.Category);
-           
-        }
-
-       
     }
 }

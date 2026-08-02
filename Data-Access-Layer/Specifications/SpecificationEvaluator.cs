@@ -16,8 +16,13 @@ namespace Data_Access_Layer.Specifications
             where TEntity : BaseEntity<Tkey>
         {
             var query = EntryPoint;
+            if (specification.Criteria is not null)
+            {
+                query = query.Where(specification.Criteria);
+            }
             if (specification is not null && specification.Include_Expressions.Any())
             {
+
                 foreach (var includeExpression in specification.Include_Expressions)
                 {
                     query = query.Include(includeExpression);

@@ -30,6 +30,10 @@ namespace Data_Access_Layer.Repository.Implementation
         {
           return await _context.Set<TEntity>().FindAsync(id);
         }
+        public async Task<TEntity?> GetById(ISpecification<TEntity, TKey> specification)
+        {
+            return await SpecificationEvaluator.CreateQuery(_context.Set<TEntity>(), specification).FirstOrDefaultAsync();
+        }
 
         public void Update(TEntity entity)
         {
@@ -46,5 +50,7 @@ namespace Data_Access_Layer.Repository.Implementation
             var query = SpecificationEvaluator.CreateQuery(_context.Set<TEntity>(), spec);
             return await query.ToListAsync();
         }
+
+      
     }
 }

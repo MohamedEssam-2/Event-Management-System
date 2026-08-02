@@ -11,5 +11,6 @@ namespace Data_Access_Layer.Specifications.Interface
     public interface ISpecification<TEntity,Tkey> where TEntity : BaseEntity<Tkey>
     {
         public ICollection<Expression<Func<TEntity, object>>> Include_Expressions { get; }
+        public Expression<Func<TEntity, bool>>? Criteria { get; }
     }
 }
