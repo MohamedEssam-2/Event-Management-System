@@ -12,9 +12,9 @@ namespace Presentation_Logic_Layer.Controllers
         
         [HttpGet]
         [AllowAnonymous]
-        public async Task <IActionResult> GetAllCategories()
+        public async Task <IActionResult> GetAllCategories(string?Search)
         {
-            var categories =await _categoryService.GetAllCategories();
+            var categories =await _categoryService.GetAllCategories(Search);
             return Ok(categories);
         }
         [HttpGet("{categoryId:int}")]

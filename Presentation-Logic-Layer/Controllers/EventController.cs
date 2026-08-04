@@ -9,11 +9,11 @@ namespace Presentation_Logic_Layer.Controllers
     [Route("api/[controller]")]
     public class EventController(IEventService _service):ControllerBase
     {
-        [HttpGet("GetAll")]
+        [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll()
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search)
         {
-            var events = await _service.GetAllEvents();
+            var events = await _service.GetAllEvents(Search);
 
             return Ok(events);
         }

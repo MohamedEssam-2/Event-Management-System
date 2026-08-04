@@ -15,5 +15,10 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
         {
             AddInclude(e => e.Events);
         }
+
+        public CategoryWithEventSpecifications(string Search):base(C => string.IsNullOrWhiteSpace(Search) || C.Name.ToLower().Contains(Search.ToLower()))
+        {
+            
+        }
     }
 }

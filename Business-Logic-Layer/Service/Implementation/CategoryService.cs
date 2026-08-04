@@ -52,11 +52,11 @@ namespace Business_Logic_Layer.Service.Implementation
             
         }
 
-        public async Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories()
+        public async Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories(string? Search)
         {
-            
-            var category=await _unitOfWork.GetRepository<Category, int>().GetAll();
-            if (category == null)
+            var spec = new CategoryWithEventSpecifications(Search);
+            var category=await _unitOfWork.GetRepository<Category, int>().GetAll(spec);
+            if (category == null || !category.Any())
             {
                 return new ServiceResponse<List<ReadCategoryDTO>>
                 {

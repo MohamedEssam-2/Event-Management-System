@@ -16,10 +16,10 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
             AddInclude(e => e.Category);
         }
         //Get all 
-        public EventWithCategorySpecification(): base(null)
+        public EventWithCategorySpecification(string Search): base(E=>string.IsNullOrWhiteSpace(Search) ||E.Name.ToLower().Contains(Search.ToLower()))
         {
             AddInclude(e => e.Category);
-           
+  
         }
 
        
