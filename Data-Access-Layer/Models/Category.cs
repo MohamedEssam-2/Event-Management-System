@@ -13,6 +13,7 @@ namespace Data_Access_Layer.Models
         public ICollection<Event> Events { get; set; } = new List<Event>();
         public string? ImageUrl { get; set; }
         public string? Description { get; set; }
+        public string? PublicId { get; set; }
 
     }
 }

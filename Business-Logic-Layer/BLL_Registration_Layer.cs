@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
+using Business_Logic_Layer.DTO.CloudinaryDTO;
 using Business_Logic_Layer.Service.Implementation;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,9 @@ namespace Business_Logic_Layer
             Services.AddScoped<IRegistrationService, RegistrationService>();
             Services.AddHttpContextAccessor();
             Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            Services.Configure<CloudinarySettingsDTO>(_configuration.GetSection("CloudinarySettings"));
+            Services.AddScoped<IUploadService, UploadService>();
+
             return Services;
         }
     }

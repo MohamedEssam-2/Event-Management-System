@@ -13,7 +13,8 @@ namespace Business_Logic_Layer.Mapping
     {
         public CategoryProfile()
         {
-            CreateMap<Category,CategoryDTO>().ReverseMap();
+            CreateMap<Category,CategoryDTO>()
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.ImageUrl)).ReverseMap();
             CreateMap<Category, ReadCategoryDTO>().ReverseMap();
             CreateMap<Category, DetailsCategoryDTO>().ReverseMap();
         }

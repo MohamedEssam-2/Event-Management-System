@@ -17,7 +17,8 @@ namespace Business_Logic_Layer.Mapping
 
             CreateMap<Event, ReadAllEventDTO>()
                 .ForMember(dest => dest.Category_id, opt => opt.MapFrom(src => src.Category.Id))
-                .ForMember(dest => dest.Category_name, opt => opt.MapFrom(src => src.Category.Name));
+                .ForMember(dest => dest.Category_name, opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl)).ReverseMap();
 
 
 

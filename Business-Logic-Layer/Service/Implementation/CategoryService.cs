@@ -15,11 +15,17 @@ using Data_Access_Layer.Specifications.EventSpecifications;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper , ICurrentUserService _currentUser) : ICategoryService
+    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper , ICurrentUserService _currentUser , IUploadService _uplaodService) : ICategoryService
     {
         public async Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO)
         {
             var category = _mapper.Map<Category>(categoryDTO);
+            if (categoryDTO.Image is not null)
+            {
+                var photo = await _uplaodService.UploadImageAsync(categoryDTO.Image, "EventManagement/Category");
+                category.ImageUrl = photo.Url;
+                category.PublicId = photo.PublicId;
+            }
             category.CreatedBy = _currentUser.FullName;
             category.CreatedAt = DateTime.UtcNow;
             var CategoryRepo = await _unitOfWork.GetRepository<Category, int>().Create(category);

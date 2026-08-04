@@ -38,7 +38,7 @@ namespace Presentation_Logic_Layer.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Organizer")]
-        public async Task<ActionResult<ReadAllEventDTO>> Create(CreateEventDTO eventDTO)
+        public async Task<ActionResult<ReadAllEventDTO>> Create([FromForm] CreateEventDTO eventDTO)
         {
             var createdEvent = await _service.CreateEvent(eventDTO);
             return Ok(createdEvent);
@@ -46,7 +46,7 @@ namespace Presentation_Logic_Layer.Controllers
 
         [HttpPatch("Update")]
         [Authorize(Roles = "Admin,Organizer")]
-        public async Task<ActionResult<ReadAllEventDTO>> Update(int id ,UpdateEventDTO eventDTO)
+        public async Task<ActionResult<ReadAllEventDTO>> Update(int id, [FromForm] UpdateEventDTO eventDTO)
         {
             var updatedEvent = await _service.UpdateEvent(id,eventDTO);
             return Ok(updatedEvent);

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Business_Logic_Layer.DTO.EventDTO
 {
@@ -29,5 +30,6 @@ namespace Business_Logic_Layer.DTO.EventDTO
 
         [Required(ErrorMessage = "OrganizerId must be Enterd here .")]
         public string OrganizerId { get; set; } = null!;
+        public IFormFile? Image { get; set; }
     }
 }

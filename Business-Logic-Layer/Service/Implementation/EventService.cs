@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business_Logic_Layer.DTO.CategoryDTO;
 using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.CategoryExceptions;
@@ -17,9 +18,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser) : IEventService
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser , IUploadService _uplaodService) : IEventService
     {
-        public async Task<ReadAllEventDTO> CreateEvent(CreateEventDTO eventDTO)
+        public async Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO)
         {
 
             var user = await _userManager.FindByIdAsync(eventDTO.OrganizerId);
@@ -35,11 +36,22 @@ namespace Business_Logic_Layer.Service.Implementation
             }
 
             var entity = _mapper.Map<Event>(eventDTO);
+            if (eventDTO.Image is not null)
+            {
+                var photo = await _uplaodService.UploadImageAsync(eventDTO.Image,"EventManagement/Events");
+                entity.ImageUrl = photo.Url;
+                entity.PublicId = photo.PublicId;
+            }
             var CreateEntity = await _unitOfWork.GetRepository<Event, int>().Create(entity);
             CreateEntity.CreatedBy = _currentUser.FullName;
             CreateEntity.CreatedAt = DateTime.UtcNow;   
             await _unitOfWork.SaveChangesAsync();
-            return _mapper.Map<ReadAllEventDTO>(CreateEntity);
+            return new ServiceResponse<int>
+            {
+                Data = CreateEntity.Id,
+                Success = true,
+                Message = "Event created successfully"
+            };
         }
 
         public async Task<bool> DeleteEvent(int id)
@@ -57,21 +69,31 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
-        public async Task<List<ReadAllEventDTO>> GetAllEvents(string? Search)
+        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search)
         {
             var spec = new EventWithCategorySpecification(Search);
             var Events=await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
-            if (!Events.Any())
+            if (Events == null || !Events.Any())
             {
-                throw new Exception("No Events Found");
+                return new ServiceResponse<List<ReadAllEventDTO>>
+                {
+                    Success = false,
+                    Message = "Cant Find Any Event ."
+                };
             }
             var EventDTO=_mapper.Map<List<ReadAllEventDTO>>(Events);
-            return EventDTO;
+           
+            return new ServiceResponse<List<ReadAllEventDTO>>
+            {
+                Success = true,
+                Data = EventDTO,
+                Message = "Events Found Successfully"
+            };
         }
 
         
 
-        public async Task<ReadAllEventDTO> GetEventById(int id)
+        public async Task <ServiceResponse<ReadAllEventDTO>> GetEventById(int id)
         {
             var spec = new EventWithCategorySpecification(id);
          var Evetns = await _unitOfWork.GetRepository<Event, int>().GetById(spec);
@@ -80,14 +102,20 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new EventNotFoundException(id);
             }
             var EventDTO =  _mapper.Map<ReadAllEventDTO>(Evetns);
-            return EventDTO;
+            return new ServiceResponse<ReadAllEventDTO>
+            {
+                Success = true,
+                Data = EventDTO,
+                Message = "Category Found Successfully"
+            };
         }
 
 
 
         public async Task<ReadAllEventDTO> UpdateEvent(int id, UpdateEventDTO eventDTO)
         {
-            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(id);
+            var spec = new EventWithCategorySpecification(id);
+            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(spec);
             if (entity is null)
             {
                 throw new EventNotFoundException(id);
