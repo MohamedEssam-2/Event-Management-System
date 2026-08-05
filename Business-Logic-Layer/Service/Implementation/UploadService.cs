@@ -51,5 +51,23 @@ namespace Business_Logic_Layer.Service.Implementation
                 PublicId = result.PublicId
             };
         }
+        public async Task DeleteImageAsync(string publicId)
+        {
+            if (string.IsNullOrWhiteSpace(publicId))
+                return;
+
+            var deleteParams = new DeletionParams(publicId);
+
+            var result = await _cloudinary.DestroyAsync(deleteParams);
+
+            if (result.Error is not null)
+                throw new Exception(result.Error.Message);
+
+            if (result.Result != "ok" &&
+                result.Result != "not found")
+            {
+                throw new Exception("Image delete failed.");
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace Business_Logic_Layer.DTO.CategoryDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        //public ReadAllEventDTO allEventDTO { get; set; }
+        public string? ImageUrl { get; set; }
+
     }
 }

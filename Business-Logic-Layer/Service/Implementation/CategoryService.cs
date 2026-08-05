@@ -44,8 +44,11 @@ namespace Business_Logic_Layer.Service.Implementation
             var category =await _unitOfWork.GetRepository<Category, int>().GetById(id);
             if (category == null)
                 throw new CategoryNotFoundException(id);
-         
-                 _unitOfWork.GetRepository<Category, int>().Delete(category);
+            if (!string.IsNullOrWhiteSpace(category.PublicId))
+            {
+                await _uplaodService.DeleteImageAsync(category.PublicId);
+            }
+            _unitOfWork.GetRepository<Category, int>().Delete(category);
                 category.DeletedBy = _currentUser.FullName;
                 category.DeletedDate = DateTime.UtcNow;
                 await _unitOfWork.SaveChangesAsync();

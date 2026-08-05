@@ -11,5 +11,6 @@ namespace Business_Logic_Layer.Service.Interface
     public interface IUploadService
     {
         Task<PhotoUploadResultDTO> UploadImageAsync(IFormFile file, string folder);
+        Task DeleteImageAsync(string publicId);
     }
 }

@@ -61,6 +61,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new EventNotFoundException(id);
             }
+            if (!string.IsNullOrWhiteSpace(entity.PublicId))
+            {
+                await _uplaodService.DeleteImageAsync(entity.PublicId);
+            }
             entity.IsDeleted = true;
             _unitOfWork.GetRepository<Event, int>().Delete(entity);
             entity.DeletedBy = _currentUser.FullName;
