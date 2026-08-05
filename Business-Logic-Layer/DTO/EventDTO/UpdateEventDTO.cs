@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Business_Logic_Layer.DTO.EventDTO
 {
@@ -19,6 +20,8 @@ namespace Business_Logic_Layer.DTO.EventDTO
         public int? MaxAttendees { get; set; }
 
         public decimal? Price { get; set; }
+        public IFormFile? Image { get; set; }
+   
 
 
     }

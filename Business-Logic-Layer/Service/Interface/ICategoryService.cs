@@ -13,6 +13,6 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<ServiceResponse<DetailsCategoryDTO>> GetById(int id);   
         public Task<ServiceResponse<bool>> DeleteCategory(int id);
         public Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO);
-        public Task<ServiceResponse<bool>> UpdateCat(int id ,CategoryDTO categoryDTO);
+        public Task<ServiceResponse<bool>> UpdateCat(int id , UpdateCategoryDTO categoryDTO);
     }
 }

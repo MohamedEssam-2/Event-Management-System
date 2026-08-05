@@ -63,8 +63,7 @@ namespace Business_Logic_Layer.Service.Implementation
             if (result.Error is not null)
                 throw new Exception(result.Error.Message);
 
-            if (result.Result != "ok" &&
-                result.Result != "not found")
+            if (result.Result != "ok" && result.Result != "not found")
             {
                 throw new Exception("Image delete failed.");
             }

@@ -42,7 +42,7 @@ namespace Presentation_Logic_Layer.Controllers
         }
         [HttpPatch]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateCategory(int categoryId, [FromForm] CategoryDTO categoryDTO)
+        public async Task<IActionResult> UpdateCategory(int categoryId, [FromForm] UpdateCategoryDTO categoryDTO)
         {
             var updated = await _categoryService.UpdateCat(categoryId, categoryDTO);
             return Ok(updated);

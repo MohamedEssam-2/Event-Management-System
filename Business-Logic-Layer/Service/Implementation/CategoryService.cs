@@ -12,6 +12,7 @@ using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
 using Data_Access_Layer.Specifications.EventSpecifications;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
@@ -101,25 +102,46 @@ namespace Business_Logic_Layer.Service.Implementation
             
         }
 
-        public async Task<ServiceResponse<bool>> UpdateCat(int id, CategoryDTO categoryDTO)
+        public async Task<ServiceResponse<bool>> UpdateCat(int id, UpdateCategoryDTO categoryDTO)
         {
             var category = await _unitOfWork.GetRepository<Category, int>().GetById(id);
             if (category == null)
                 throw new CategoryNotFoundException(id);
            
-                if(categoryDTO.Name != null)
+            if(categoryDTO.Name != null)
                 {
                     category.Name = categoryDTO.Name;
                 }
+            if(categoryDTO.Description != null)
+                {
+                category.Description = categoryDTO.Description;
+                }
+
+            var oldPublicId = category.PublicId;
+            if (categoryDTO.Image is not null)
+                {
+                var photo = await _uplaodService.UploadImageAsync(categoryDTO.Image, "EventManagement/Category");
+
+                category.ImageUrl = photo.Url;
+                category.PublicId = photo.PublicId;
+                }
+
                 category.UpdatedBy = _currentUser.FullName;
                 category.UpdatedAt = DateTime.UtcNow;
                 _unitOfWork.GetRepository<Category, int>().Update(category);
                 await _unitOfWork.SaveChangesAsync();
-                return new ServiceResponse<bool>
+
+            if (categoryDTO.Image is not null && !string.IsNullOrWhiteSpace(oldPublicId))
+            {
+                await _uplaodService.DeleteImageAsync(oldPublicId);
+            }
+
+            return new ServiceResponse<bool>
                 {
                     Success = true,
-                    Message = "Category Updated Successfully"
-                };
+                    Message = "Category Updated Successfully",
+                   
+            };
             
         }
     }

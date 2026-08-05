@@ -128,7 +128,7 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new EventDeletedException(id);
             }
-
+    
             if (eventDTO.Name != null)
                 entity.Name = eventDTO.Name;
 
@@ -144,6 +144,15 @@ namespace Business_Logic_Layer.Service.Implementation
             if (eventDTO.Price.HasValue)
                 entity.Price = eventDTO.Price.Value;
 
+            var oldPublicId = entity.PublicId;
+
+            if (eventDTO.Image is not null)
+            {
+                var photo = await _uplaodService.UploadImageAsync(eventDTO.Image, "EventManagement/Events");
+
+                entity.ImageUrl = photo.Url;
+                entity.PublicId = photo.PublicId;
+            }
             //entity.UpdatedBy
 
             _unitOfWork.GetRepository<Event, int>().Update(entity);
@@ -151,6 +160,11 @@ namespace Business_Logic_Layer.Service.Implementation
             entity.UpdatedAt = DateTime.UtcNow;
 
             await _unitOfWork.SaveChangesAsync();
+
+            if (eventDTO.Image is not null &&  !string.IsNullOrWhiteSpace(oldPublicId))
+            {
+                await _uplaodService.DeleteImageAsync(oldPublicId);
+            }
 
             return _mapper.Map<ReadAllEventDTO>(entity);
         }
