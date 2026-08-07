@@ -28,6 +28,18 @@ namespace Data_Access_Layer.Specifications
                     query = query.Include(includeExpression);
                 }
             }
+            if(specification.OrderBy is not null)
+            {
+                query = query.OrderBy(specification.OrderBy);
+            }
+            if (specification.OrderByDescending is not null)
+            {
+                query = query.OrderByDescending(specification.OrderByDescending);
+            }
+            if (specification.IsPaginated)
+            {
+                query = query.Skip(specification.Skip).Take(specification.Take);
+            }
             return query;
         }
     }

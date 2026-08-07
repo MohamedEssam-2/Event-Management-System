@@ -11,9 +11,9 @@ namespace Presentation_Logic_Layer.Controllers
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search)
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search , [FromQuery] int PageSize=5, [FromQuery] int PageIndex=1, [FromQuery] string? sortBy = null)
         {
-            var events = await _service.GetAllEvents(Search);
+            var events = await _service.GetAllEvents(Search, PageSize, PageIndex,sortBy);
 
             return Ok(events);
         }

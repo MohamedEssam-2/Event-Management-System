@@ -73,9 +73,9 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
-        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search)
+        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageSize, int PageIndex, string sortBy)
         {
-            var spec = new EventWithCategorySpecification(Search);
+            var spec = new EventWithCategorySpecification(Search, PageSize, PageIndex,sortBy);
             var Events=await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
             if (Events == null || !Events.Any())
             {

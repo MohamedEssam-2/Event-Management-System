@@ -16,10 +16,35 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
             AddInclude(e => e.Category);
         }
         //Get all 
-        public EventWithCategorySpecification(string Search): base(E=>string.IsNullOrWhiteSpace(Search) ||E.Name.ToLower().Contains(Search.ToLower()))
+        public EventWithCategorySpecification(string Search, int PageSize, int PageIndex, string sortBy) : base(E=>string.IsNullOrWhiteSpace(Search) ||E.Name.ToLower().Contains(Search.ToLower()))
         {
             AddInclude(e => e.Category);
-  
+            switch(sortBy)
+            {
+                case "nameAsc":
+                    AddOrderBy(e => e.Name);
+                    break;
+                case "nameDesc":
+                    AddOrderByDescending(e => e.Name);
+                    break;
+                case "dateAsc":
+                    AddOrderBy(e => e.Date);
+                    break;
+                case "dateDesc":
+                    AddOrderByDescending(e => e.Date);
+                    break;
+                case "priceAsc":
+                    AddOrderBy(e => e.Price);
+                    break;
+                case "priceDesc":
+                    AddOrderByDescending(e => e.Price);
+                    break;
+                default:
+                    AddOrderBy(e => e.Id);
+                    break;
+            }
+
+            ApplyPagination(PageSize, PageIndex);
         }
 
        

@@ -9,7 +9,7 @@ namespace Business_Logic_Layer.Service.Interface
 {
     public interface IEventService
     {
-        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string ?Search);
+        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string ?Search , int PageSize, int PageIndex,string sortBy);
         public Task<ServiceResponse<ReadAllEventDTO>> GetEventById(int id);
         public Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO);
         public Task<bool> DeleteEvent(int id);
