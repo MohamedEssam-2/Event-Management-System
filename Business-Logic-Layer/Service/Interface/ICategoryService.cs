@@ -9,7 +9,7 @@ namespace Business_Logic_Layer.Service.Interface
 {
     public interface ICategoryService
     {
-        public Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories(string? Search);
+        public Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories(string? Search, int PageIndex, int PageSize, string sortby);
         public Task<ServiceResponse<DetailsCategoryDTO>> GetById(int id);   
         public Task<ServiceResponse<bool>> DeleteCategory(int id);
         public Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO);

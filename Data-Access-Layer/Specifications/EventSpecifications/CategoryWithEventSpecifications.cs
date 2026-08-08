@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +17,24 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
             AddInclude(e => e.Events);
         }
 
-        public CategoryWithEventSpecifications(string Search):base(C => string.IsNullOrWhiteSpace(Search) || C.Name.ToLower().Contains(Search.ToLower()))
+        public CategoryWithEventSpecifications(string Search , int PageIndex, int PageSize, string sortby) :base(C => string.IsNullOrWhiteSpace(Search) || C.Name.ToLower().Contains(Search.ToLower()))
         {
-            
+            switch (sortby)
+            {
+                case "nameAsc":
+                    AddOrderBy(e => e.Name);
+                    break;
+                case "nameDesc":
+                    AddOrderByDescending(e => e.Name);
+                    break;
+             
+                default:
+                    AddOrderBy(e => e.Id);
+                    break;
+            }
+
+            ApplyPagination(PageSize, PageIndex);
         }
     }
+    
 }

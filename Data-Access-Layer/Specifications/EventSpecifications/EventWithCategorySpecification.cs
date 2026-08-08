@@ -16,7 +16,7 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
             AddInclude(e => e.Category);
         }
         //Get all 
-        public EventWithCategorySpecification(string Search, int PageSize, int PageIndex, string sortBy) : base(E=>string.IsNullOrWhiteSpace(Search) ||E.Name.ToLower().Contains(Search.ToLower()))
+        public EventWithCategorySpecification(string Search, int PageIndex, int PageSize, string sortBy) : base(E=>string.IsNullOrWhiteSpace(Search) ||E.Name.ToLower().Contains(Search.ToLower()))
         {
             AddInclude(e => e.Category);
             switch(sortBy)

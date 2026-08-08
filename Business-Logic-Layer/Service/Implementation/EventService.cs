@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO.CategoryDTO;
 using Business_Logic_Layer.DTO.EventDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.CategoryExceptions;
 using Business_Logic_Layer.Exceptions.UserExceptions;
@@ -73,9 +74,9 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
-        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageSize, int PageIndex, string sortBy)
+        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageIndex, int PageSize, string sortBy)
         {
-            var spec = new EventWithCategorySpecification(Search, PageSize, PageIndex,sortBy);
+            var spec = new EventWithCategorySpecification(Search, PageIndex, PageSize, sortBy);
             var Events=await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
             if (Events == null || !Events.Any())
             {

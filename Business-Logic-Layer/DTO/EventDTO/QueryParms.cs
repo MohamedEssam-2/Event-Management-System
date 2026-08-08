@@ -7,7 +7,7 @@
 
 //namespace Business_Logic_Layer.DTO.EventDTO
 //{
-//    public class EventQueryParms
+//    public class QueryParms
 //    {
 //        public string? Search { get; set; }
 //        public EventSortingOptions? SortBy { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Business_Logic_Layer.DTO.EventDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ namespace Presentation_Logic_Layer.Controllers
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search , [FromQuery] int PageSize=5, [FromQuery] int PageIndex=1, [FromQuery] string? sortBy = null)
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search , [FromQuery] int PageIndex = 1, [FromQuery] int PageSize=5, [FromQuery] string? sortBy = null)
         {
-            var events = await _service.GetAllEvents(Search, PageSize, PageIndex,sortBy);
+            var events = await _service.GetAllEvents(Search, PageIndex, PageSize,sortBy);
 
             return Ok(events);
         }

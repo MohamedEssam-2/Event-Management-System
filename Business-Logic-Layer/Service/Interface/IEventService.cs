@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.EventDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
 
 namespace Business_Logic_Layer.Service.Interface
 {
     public interface IEventService
     {
-        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string ?Search , int PageSize, int PageIndex,string sortBy);
+        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string ?Search , int PageIndex, int PageSize,string sortBy);
         public Task<ServiceResponse<ReadAllEventDTO>> GetEventById(int id);
         public Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO);
         public Task<bool> DeleteEvent(int id);
