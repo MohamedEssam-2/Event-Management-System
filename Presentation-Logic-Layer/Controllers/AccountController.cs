@@ -21,5 +21,23 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(user);
 
         }
+        [HttpPost("ResendConfirmEmail")]
+        public async Task<ActionResult<MessageDTO>> ResendConfirmEmail(string email)
+        {
+            await _accountService.ResendConfirmEmail(email);
+            return Ok(new MessageDTO
+            {
+                Message = "Confirmation email has been resent successfully"
+            });
+        }
+        [HttpGet("ConfirmEmail")]
+        public async Task<ActionResult<MessageDTO>> ConfirmEmail(string userId, string token)
+        {
+            await _accountService.ConfirmEmail(userId, token);
+            return Ok(new MessageDTO
+            {
+                Message = "Email has been confirmed successfully"
+            });
+        }
     }
 }

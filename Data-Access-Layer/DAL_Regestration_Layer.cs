@@ -34,7 +34,8 @@ namespace Data_Access_Layer
                 options.Password.RequiredLength = 8;
             })
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<EventContext>();
+            .AddEntityFrameworkStores<EventContext>()
+             .AddDefaultTokenProviders();
 
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

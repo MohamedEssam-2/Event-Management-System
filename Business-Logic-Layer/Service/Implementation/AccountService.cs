@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.Exceptions;
+using Business_Logic_Layer.Exceptions.UserExceptions;
 using Business_Logic_Layer.Service.Interface;
+using CloudinaryDotNet;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
@@ -15,9 +17,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
+
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class AccountService(UserManager<ApplicationUser> _userManager , IOptions<JwtOptions> _jwtoptions) : IAccountService
+    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService) : IAccountService
     {
         public async Task<MessageDTO> Register(RegisterDTO registerDTO)
         {
@@ -28,7 +31,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 Email = registerDTO.Email,
                 Age = registerDTO.Age,
                 //PhoneNumber = registerDTO.Phone_Number
-                
+
             };
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
             if (result.Succeeded)
@@ -50,7 +53,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new BadRequestException(errors);
             }
         }
-        public async Task<string>CreateTokenAsync(ApplicationUser user)
+        public async Task<string> CreateTokenAsync(ApplicationUser user)
         {
             var jwt = _jwtoptions.Value;
             var claims = new List<Claim>
@@ -80,12 +83,12 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<UserDTO> Login(LoginDTO loginDTO)
         {
-           var user = await _userManager.FindByEmailAsync(loginDTO.Email);
+            var user = await _userManager.FindByEmailAsync(loginDTO.Email);
             if (user == null)
             {
                 throw new UnauthorizedException("Invalid email or password ");
             }
-            var result =await _userManager.CheckPasswordAsync(user, loginDTO.Password);
+            var result = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
             if (!result)
             {
                 throw new UnauthorizedException("Invalid email or password");
@@ -97,6 +100,50 @@ namespace Business_Logic_Layer.Service.Implementation
                 Token = await CreateTokenAsync(user),
             };
         }
-    }
 
+        public async Task ResendConfirmEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Email is required");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+            if (user.EmailConfirmed)
+            {
+                throw new Exception("Email is already confirmed");
+            }
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var BaseUrl = _configuration["ServerSettings:BaseUrl"];
+
+            var confirmationLink =
+                $"{BaseUrl.TrimEnd('/')}/api/account/ConfirmEmail" +$"?userId={user.Id}" +$"&token={Uri.EscapeDataString(token)}";
+            var htmlMessage = $"<h1>Confirm your email</h1><p>Please confirm your email by clicking on the link below:</p><a href='{confirmationLink}'>Confirm Email</a>";
+            await _emailService.SendEmailAsync(user.Email!, "Confirm your email", htmlMessage);
+        }
+
+        public async Task ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                throw new Exception("UserId and token are required");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                throw new BadRequestException(errors);
+            }
+
+        }
+
+    }
 }

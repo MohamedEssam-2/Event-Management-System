@@ -11,5 +11,8 @@ namespace Business_Logic_Layer.Service.Interface
     {
         public Task<MessageDTO> Register(RegisterDTO registerDTO);
         public Task<UserDTO> Login(LoginDTO loginDTO);
+        public Task ResendConfirmEmail(string email);
+        public Task ConfirmEmail(string userId, string token);
+
     }
 }

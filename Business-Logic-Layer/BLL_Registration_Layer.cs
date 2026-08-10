@@ -26,6 +26,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<ICurrentUserService, CurrentUserService>();
             Services.Configure<CloudinarySettingsDTO>(_configuration.GetSection("CloudinarySettings"));
             Services.AddScoped<IUploadService, UploadService>();
+            Services.AddScoped<IEmailService, EmailService>();
 
             return Services;
         }
