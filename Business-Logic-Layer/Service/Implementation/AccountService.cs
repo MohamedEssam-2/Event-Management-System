@@ -13,6 +13,7 @@ using CloudinaryDotNet;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -145,5 +146,42 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
+        public async Task DeleteUser(string userId)
+        {
+            var user =await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw  new UserNotFoundException(userId);
+            }
+            var result= await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                throw new BadRequestException(errors);
+            }
+        }
+
+        public async Task<List<ReadUserDTO>> GetAllUsers()
+        {
+           var users = await _userManager.Users.ToListAsync();
+           var result = new List<ReadUserDTO>();
+           foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                result.Add(new ReadUserDTO
+                {
+                    UserId = user.Id!,
+                    FullName = user.FullName,
+                    Email = user.Email!,
+                    EmailConfirmed= user.EmailConfirmed,
+                    Roles = roles.ToList()
+                });
+            }
+            if (!result.Any())
+            {
+                throw new Exception("No users found");
+            }
+            return result;
+        }
     }
 }

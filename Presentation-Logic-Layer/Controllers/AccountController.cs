@@ -1,5 +1,6 @@
 ﻿using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation_Logic_Layer.Controllers
@@ -39,5 +40,27 @@ namespace Presentation_Logic_Layer.Controllers
                 Message = "Email has been confirmed successfully"
             });
         }
+
+        [HttpDelete("DeleteUser")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<MessageDTO>> DeleteUser(string userId)
+        {
+            await _accountService.DeleteUser(userId);
+            return Ok(new MessageDTO
+            {
+                Message = "User has been deleted successfully"
+            });
+        }
+
+        [HttpGet("GetAllUsers")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<UserDTO>>> GetAllUsers()
+        {
+            var result = await _accountService.GetAllUsers();
+            return Ok(result);
+          
+        }
+
+
     }
 }

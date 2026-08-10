@@ -13,6 +13,8 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<UserDTO> Login(LoginDTO loginDTO);
         public Task ResendConfirmEmail(string email);
         public Task ConfirmEmail(string userId, string token);
+        public Task DeleteUser(string userId);
+        public Task<List<ReadUserDTO>> GetAllUsers();
 
     }
 }
