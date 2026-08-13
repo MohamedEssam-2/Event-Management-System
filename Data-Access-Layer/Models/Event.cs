@@ -18,6 +18,8 @@ namespace Data_Access_Layer.Models
         public EventStatus Status { get; set; } = EventStatus.Scheduled;
         public string? ImageUrl { get; set; }
         public string? PublicId { get; set; }
+        public string? Description { get; set; }
+
 
         // Foreign key to Category
         public int CategoryId { get; set; }

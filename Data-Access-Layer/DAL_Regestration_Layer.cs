@@ -38,6 +38,7 @@ namespace Data_Access_Layer
              .AddDefaultTokenProviders();
 
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            Services.AddScoped<IRefreshTokenRepo, RefreshTokenRepo>();
 
 
 

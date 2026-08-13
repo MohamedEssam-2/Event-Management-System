@@ -4,6 +4,7 @@ using Data_Access_Layer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access_Layer.Database.Migrations
 {
     [DbContext(typeof(EventContext))]
-    partial class EventContextModelSnapshot : ModelSnapshot
+    [Migration("20260813134439_AddDescriptionFieldInEventTable")]
+    partial class AddDescriptionFieldInEventTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,45 +235,6 @@ namespace Data_Access_Layer.Database.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("Data_Access_Layer.Models.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRevoked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("Data_Access_Layer.Models.Registration", b =>
                 {
                     b.Property<int>("Id")
@@ -480,17 +444,6 @@ namespace Data_Access_Layer.Database.Migrations
                     b.Navigation("Organizer");
                 });
 
-            modelBuilder.Entity("Data_Access_Layer.Models.RefreshToken", b =>
-                {
-                    b.HasOne("Data_Access_Layer.Models.ApplicationUser", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Data_Access_Layer.Models.Registration", b =>
                 {
                     b.HasOne("Data_Access_Layer.Models.Event", "Event")
@@ -564,8 +517,6 @@ namespace Data_Access_Layer.Database.Migrations
             modelBuilder.Entity("Data_Access_Layer.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Events");
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Registrations");
                 });

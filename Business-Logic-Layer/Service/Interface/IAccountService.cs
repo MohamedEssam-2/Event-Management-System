@@ -15,6 +15,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task ConfirmEmail(string userId, string token);
         public Task DeleteUser(string userId);
         public Task<List<ReadUserDTO>> GetAllUsers();
+        public Task<UserDTO> RefreshToken(string token);
 
     }
 }

@@ -21,7 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService) : IAccountService
+    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService, IRefreshTokenService _refreshTokenService) : IAccountService
     {
         public async Task<MessageDTO> Register(RegisterDTO registerDTO)
         {
@@ -81,6 +81,7 @@ namespace Business_Logic_Layer.Service.Implementation
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        
 
         public async Task<UserDTO> Login(LoginDTO loginDTO)
         {
@@ -94,11 +95,15 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new UnauthorizedException("Invalid email or password");
             }
+            var accessToken = await CreateTokenAsync(user);
+
+            var refreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
             return new UserDTO()
             {
                 Email = user.Email!,
                 DispalyName = user.FullName,
-                Token = await CreateTokenAsync(user),
+                Token = accessToken,
+                RefreshToken = refreshToken
             };
         }
 
@@ -121,7 +126,7 @@ namespace Business_Logic_Layer.Service.Implementation
             var BaseUrl = _configuration["ServerSettings:BaseUrl"];
 
             var confirmationLink =
-                $"{BaseUrl.TrimEnd('/')}/api/account/ConfirmEmail" +$"?userId={user.Id}" +$"&token={Uri.EscapeDataString(token)}";
+                $"{BaseUrl.TrimEnd('/')}/api/account/ConfirmEmail" + $"?userId={user.Id}" + $"&token={Uri.EscapeDataString(token)}";
             var htmlMessage = $"<h1>Confirm your email</h1><p>Please confirm your email by clicking on the link below:</p><a href='{confirmationLink}'>Confirm Email</a>";
             await _emailService.SendEmailAsync(user.Email!, "Confirm your email", htmlMessage);
         }
@@ -148,12 +153,12 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task DeleteUser(string userId)
         {
-            var user =await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                throw  new UserNotFoundException(userId);
+                throw new UserNotFoundException(userId);
             }
-            var result= await _userManager.DeleteAsync(user);
+            var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
@@ -163,9 +168,9 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<List<ReadUserDTO>> GetAllUsers()
         {
-           var users = await _userManager.Users.ToListAsync();
-           var result = new List<ReadUserDTO>();
-           foreach (var user in users)
+            var users = await _userManager.Users.ToListAsync();
+            var result = new List<ReadUserDTO>();
+            foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 result.Add(new ReadUserDTO
@@ -173,7 +178,7 @@ namespace Business_Logic_Layer.Service.Implementation
                     UserId = user.Id!,
                     FullName = user.FullName,
                     Email = user.Email!,
-                    EmailConfirmed= user.EmailConfirmed,
+                    EmailConfirmed = user.EmailConfirmed,
                     Roles = roles.ToList()
                 });
             }
@@ -183,5 +188,41 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             return result;
         }
+    
+    public async Task<UserDTO> RefreshToken(string token)
+        {
+
+            var storedToken = await _refreshTokenService.GetByRefreshToken(token);
+            if (storedToken.ExpiresAt <= DateTime.UtcNow)
+            {
+                throw new UnauthorizedException(
+                    "Refresh token has expired");
+            }
+            var user = await _userManager.FindByIdAsync(storedToken.UserId);
+            if (user == null)
+            {
+                throw new UserNotFoundException(
+                    storedToken.UserId);
+            }
+
+            // 4. Revoke the old refresh token
+            await _refreshTokenService.RevokeRefreshToken(token);
+
+            // 5. Generate a new access token
+            var accessToken = await CreateTokenAsync(user);
+
+            // 6. Generate and save a new refresh token
+            var newRefreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
+
+            // 7. Return both tokens
+            return new UserDTO
+            {
+                Email = user.Email!,
+                DispalyName = user.FullName,
+                Token = accessToken,
+                RefreshToken = newRefreshToken
+            };
+        }
     }
 }
+

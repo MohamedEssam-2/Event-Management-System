@@ -22,6 +22,13 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(user);
 
         }
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult<UserDTO>> RefreshToken(string token)
+        {
+            var user = await _accountService.RefreshToken(token);
+            return Ok(user);
+        }
+
         [HttpPost("ResendConfirmEmail")]
         public async Task<ActionResult<MessageDTO>> ResendConfirmEmail(string email)
         {

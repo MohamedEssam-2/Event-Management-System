@@ -15,5 +15,6 @@ namespace Data_Access_Layer.Models
         //public string? Phone_Number { get; set; }
         public ICollection<Event> Events { get; set; } = new List<Event>();
         public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }
