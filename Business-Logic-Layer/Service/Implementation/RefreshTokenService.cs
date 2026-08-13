@@ -20,11 +20,7 @@ namespace Business_Logic_Layer.Service.Implementation
     {
         public async Task<string> CreateRefreshToken(string userId)
         {
-            //var user = await _userManager.FindByIdAsync(userId);
-            //if (user == null)
-            //{
-            //    throw new UserNotFoundException(userId);
-            //}
+           
             var token = GenerateRefreshToken();
             var refreshToken = new RefreshToken
             {
@@ -53,7 +49,7 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new NotFoundException("Refresh token not found");
             }
-            if(refreshToken.ExpiresAt < DateTime.UtcNow)
+            if(refreshToken.ExpiresAt <= DateTime.UtcNow)
             {
                 throw new UnauthorizedException("Refresh token has expired");
             }
@@ -70,6 +66,14 @@ namespace Business_Logic_Layer.Service.Implementation
             if (refreshToken == null)
             {
                 throw new NotFoundException("Refresh token not found");
+            }
+            if (refreshToken.ExpiresAt <= DateTime.UtcNow)
+            {
+                throw new UnauthorizedException("Refresh token has expired");
+            }
+            if (refreshToken.IsRevoked)
+            {
+                throw new UnauthorizedException("Refresh token has been revoked");
             }
             refreshToken.IsRevoked = true;
             _refreshToken.Update(refreshToken);

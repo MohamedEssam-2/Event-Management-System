@@ -7,7 +7,7 @@ namespace Presentation_Logic_Layer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController(IAccountService _accountService) : ControllerBase
+    public class AccountController(IAccountService _accountService , IRefreshTokenService _refreshToken) : ControllerBase
     {
         [HttpPost("Login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
@@ -29,6 +29,13 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(user);
         }
 
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout(string refreshToken)
+        {
+            var Logout = await _refreshToken.RevokeRefreshToken(refreshToken);
+            return Ok(Logout);
+        }
+
         [HttpPost("ResendConfirmEmail")]
         public async Task<ActionResult<MessageDTO>> ResendConfirmEmail(string email)
         {
@@ -48,6 +55,16 @@ namespace Presentation_Logic_Layer.Controllers
             });
         }
 
+
+        [HttpGet("GetAllUsers")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<UserDTO>>> GetAllUsers()
+        {
+            var result = await _accountService.GetAllUsers();
+            return Ok(result);
+          
+        }
+
         [HttpDelete("DeleteUser")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<MessageDTO>> DeleteUser(string userId)
@@ -57,15 +74,6 @@ namespace Presentation_Logic_Layer.Controllers
             {
                 Message = "User has been deleted successfully"
             });
-        }
-
-        [HttpGet("GetAllUsers")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<List<UserDTO>>> GetAllUsers()
-        {
-            var result = await _accountService.GetAllUsers();
-            return Ok(result);
-          
         }
 
 

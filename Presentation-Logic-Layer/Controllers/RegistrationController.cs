@@ -15,7 +15,7 @@ namespace Presentation_Logic_Layer.Controllers
         public async Task<IActionResult> GetAllRegistrations()
         {
             var registrations = await _registrationService.GetAllRegistration();
-            return Ok();
+            return Ok(registrations);
         }
         [HttpPost]
         [Authorize(Roles = "Admin,Attendee")]
