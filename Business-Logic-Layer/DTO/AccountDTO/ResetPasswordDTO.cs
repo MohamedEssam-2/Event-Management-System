@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.DTO.AccountDTO
 {
-    public class LoginDTO
+    public class ResetPasswordDTO
     {
         [Required]
-        public string Email { get; set; } = null!;
+        public string UserId { get; set; } = null!;
+
         [Required]
-        public string Password { get; set; } = null!;
+        public string Token { get; set; } = null!;
+
+        [Required]
+        [MinLength(6)]
+        public string NewPassword { get; set; } = null!;
     }
 }

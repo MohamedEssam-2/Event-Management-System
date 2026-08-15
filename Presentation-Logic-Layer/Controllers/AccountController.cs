@@ -55,6 +55,18 @@ namespace Presentation_Logic_Layer.Controllers
             });
         }
 
+        [HttpPost("ForgetPassword")]
+        public async Task<ActionResult<MessageDTO>> ForgetPassword(string email)
+        {
+           var result= await _accountService.ForgotPassword(email);
+            return Ok(result);
+        }
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<MessageDTO>> ResetPassword(ResetPasswordDTO dto)
+        {
+            var result = await _accountService.ResetPassword(dto);
+            return Ok(result);
+        }
 
         [HttpGet("GetAllUsers")]
         [Authorize(Roles = "Admin")]

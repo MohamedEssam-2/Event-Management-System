@@ -16,6 +16,8 @@ namespace Business_Logic_Layer.Service.Interface
         public Task DeleteUser(string userId);
         public Task<List<ReadUserDTO>> GetAllUsers();
         public Task<UserDTO> RefreshToken(string token);
+        public Task<MessageDTO> ForgotPassword(string email);
+        public Task<MessageDTO> ResetPassword(ResetPasswordDTO dto);
 
     }
 }

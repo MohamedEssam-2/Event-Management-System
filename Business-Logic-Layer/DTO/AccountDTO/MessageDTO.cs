@@ -8,6 +8,6 @@ namespace Business_Logic_Layer.DTO.AccountDTO
 {
     public class MessageDTO
     {
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
     }
 }

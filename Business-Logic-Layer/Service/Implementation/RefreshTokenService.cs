@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class RefreshTokenService(IRefreshTokenRepo _refreshToken, IUnitOfWork _unitOfWork , UserManager<ApplicationUser> _userManager , IMapper _mapper) : IRefreshTokenService
+    public class RefreshTokenService(IRefreshTokenRepo _refreshToken, IUnitOfWork _unitOfWork  , IMapper _mapper) : IRefreshTokenService
     {
         public async Task<string> CreateRefreshToken(string userId)
         {

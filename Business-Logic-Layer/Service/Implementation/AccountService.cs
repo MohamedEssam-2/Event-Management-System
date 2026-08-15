@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.Exceptions;
@@ -111,7 +112,7 @@ namespace Business_Logic_Layer.Service.Implementation
         {
             if (string.IsNullOrEmpty(email))
             {
-                throw new Exception("Email is required");
+                throw new NotFoundException("Email is required");
             }
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -193,6 +194,7 @@ namespace Business_Logic_Layer.Service.Implementation
         {
 
             var storedToken = await _refreshTokenService.GetByRefreshToken(token);
+            
             if (storedToken.ExpiresAt <= DateTime.UtcNow)
             {
                 throw new UnauthorizedException(
@@ -221,6 +223,56 @@ namespace Business_Logic_Layer.Service.Implementation
                 DispalyName = user.FullName,
                 Token = accessToken,
                 RefreshToken = newRefreshToken
+            };
+        }
+
+        public async Task<MessageDTO> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new NotFoundException("Email is required");
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var BaseUrl = _configuration["ServerSettings:BaseUrl"];
+            var resetLink =
+                            $"{BaseUrl.TrimEnd('/')}/api/account/ResetPassword" +
+                            $"?userId={user.Id}" +
+                            $"&token={Uri.EscapeDataString(token)}";
+
+            var htmlMessage =
+                            $"<h1>Reset your password</h1>" +
+                            $"<p>Click the link below to reset your password:</p>" +
+                            $"<a href='{HtmlEncoder.Default.Encode(resetLink)}'>Reset Password</a>";
+            await _emailService.SendEmailAsync(user.Email!, "Confirm your email", htmlMessage);
+            return new MessageDTO
+            {
+                Message = "Reset password link has been sent to your email."
+            };
+
+        }
+
+        public async Task<MessageDTO> ResetPassword(ResetPasswordDTO dto)
+        {
+            var user = await _userManager.FindByIdAsync(dto.UserId);
+            if (user == null)
+            {
+                throw new UserNotFoundException(dto.UserId);
+            }
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                throw new BadRequestException(errors);
+            }
+            return new MessageDTO
+            {
+                Message = "Password has been reset successfully."
             };
         }
     }
