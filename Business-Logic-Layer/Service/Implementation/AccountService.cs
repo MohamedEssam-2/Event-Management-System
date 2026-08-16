@@ -36,24 +36,24 @@ namespace Business_Logic_Layer.Service.Implementation
 
             };
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
-            if (result.Succeeded)
-            {
-                //return new UserDTO()
-                //{
-                //    Email = user.Email!,
-                //    DispalyName = user.FullName,
-                //    Token = await CreateTokenAsync(user),
-                //};
-                return new MessageDTO
-                {
-                    Message = "User registered successfully."
-                };
-            }
-            else
+            if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
                 throw new BadRequestException(errors);
             }
+            var roleResult = await _userManager.AddToRoleAsync(user, "Attendee");
+            if (!roleResult.Succeeded)
+            {
+                // Rollback user creation
+                await _userManager.DeleteAsync(user);
+                var errors = roleResult.Errors.Select(e => e.Description).ToList();
+                throw new BadRequestException(errors);
+            }
+            await SendConfirmationEmail(user);
+            return new MessageDTO
+            {
+                Message = "User registered successfully. Please check your email to confirm your account."
+            };
         }
         public async Task<string> CreateTokenAsync(ApplicationUser user)
         {
@@ -96,6 +96,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new UnauthorizedException("Invalid email or password");
             }
+            if (!user.EmailConfirmed)
+            {
+                throw new UnauthorizedException("Please confirm your email before logging in.");
+            }
             var accessToken = await CreateTokenAsync(user);
 
             var refreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
@@ -123,13 +127,7 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new Exception("Email is already confirmed");
             }
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var BaseUrl = _configuration["ServerSettings:BaseUrl"];
-
-            var confirmationLink =
-                $"{BaseUrl.TrimEnd('/')}/api/account/ConfirmEmail" + $"?userId={user.Id}" + $"&token={Uri.EscapeDataString(token)}";
-            var htmlMessage = $"<h1>Confirm your email</h1><p>Please confirm your email by clicking on the link below:</p><a href='{confirmationLink}'>Confirm Email</a>";
-            await _emailService.SendEmailAsync(user.Email!, "Confirm your email", htmlMessage);
+            await SendConfirmationEmail(user);
         }
 
         public async Task ConfirmEmail(string userId, string token)
@@ -143,6 +141,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new UserNotFoundException(userId);
             }
+            if (user.EmailConfirmed)
+            {
+                throw new Exception("Email is already confirmed");
+            }
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
@@ -150,6 +152,29 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new BadRequestException(errors);
             }
 
+        }
+        private async Task SendConfirmationEmail(ApplicationUser user)
+        {
+            var token =
+                await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var baseUrl = _configuration["ServerSettings:BaseUrl"];
+
+            var confirmationLink =
+                $"{baseUrl.TrimEnd('/')}/api/account/ConfirmEmail" +
+                $"?userId={user.Id}" +
+                $"&token={Uri.EscapeDataString(token)}";
+
+            var htmlMessage =
+                $"<h1>Confirm your email</h1>" +
+                $"<p>Please confirm your email by clicking the link below:</p>" +
+                $"<a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>" +
+                $"Confirm Email</a>";
+
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                "Confirm your email",
+                htmlMessage);
         }
 
         public async Task DeleteUser(string userId)
@@ -206,6 +231,11 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new UserNotFoundException(
                     storedToken.UserId);
             }
+            if (!user.EmailConfirmed)
+            {
+                throw new UnauthorizedException(
+                    "Please confirm your email before continuing.");
+            }
 
             // 4. Revoke the old refresh token
             await _refreshTokenService.RevokeRefreshToken(token);
@@ -249,7 +279,7 @@ namespace Business_Logic_Layer.Service.Implementation
                             $"<h1>Reset your password</h1>" +
                             $"<p>Click the link below to reset your password:</p>" +
                             $"<a href='{HtmlEncoder.Default.Encode(resetLink)}'>Reset Password</a>";
-            await _emailService.SendEmailAsync(user.Email!, "Confirm your email", htmlMessage);
+            await _emailService.SendEmailAsync(user.Email!, "Reset your password", htmlMessage);
             return new MessageDTO
             {
                 Message = "Reset password link has been sent to your email."

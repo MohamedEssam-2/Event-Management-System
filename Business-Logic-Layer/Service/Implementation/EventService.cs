@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.DTO.CategoryDTO;
 using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.DTO.PaginationDTO;
@@ -11,6 +12,7 @@ using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.CategoryExceptions;
 using Business_Logic_Layer.Exceptions.UserExceptions;
 using Business_Logic_Layer.Service.Interface;
+using Data_Access_Layer.Enum;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repository.Interface;
 using Data_Access_Layer.Specifications.EventSpecifications;
@@ -145,6 +147,25 @@ namespace Business_Logic_Layer.Service.Implementation
             if (eventDTO.Price.HasValue)
                 entity.Price = eventDTO.Price.Value;
 
+            // Completed to Scheduled 
+            // Scheduled to Canceld
+
+            if (eventDTO.Status.HasValue)
+            {
+                if (entity.Status == EventStatus.Completed)
+                {
+                    throw new Exception("Completed event cannot change its status.");
+                }
+
+                if (entity.Status == EventStatus.Canceled)
+                {
+                    throw new Exception("Canceled event cannot change its status.");
+                }
+                entity.Status = eventDTO.Status.Value;
+            }
+            if (eventDTO.Description!=null)
+                entity.Description = eventDTO.Description;
+
             var oldPublicId = entity.PublicId;
 
             if (eventDTO.Image is not null)
@@ -180,6 +201,72 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             var EventDTO = _mapper.Map<List<ReadAllEventDTO>>(entity);
             return EventDTO;
+        }
+
+        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetMyEvents()
+        {
+            var userId = _currentUser.UserId;
+            if (userId == null)
+            {
+                throw new UserNotFoundException(userId);
+            }
+            var spec = new MyEventsSpecification(userId);
+            var events = await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
+            var EventDTO = _mapper.Map<List<ReadAllEventDTO>>(events);
+            return new ServiceResponse<List<ReadAllEventDTO>>
+            {
+                Success = true,
+                Data = EventDTO,
+                Message = "Events Found Successfully"
+            };
+
+        }
+
+        public async Task<ServiceResponse<ReadAllEventDTO>> CancelEvent(int eventId)
+        {
+            var spec = new EventWithCategorySpecification(eventId);
+            var entity = await _unitOfWork.GetRepository<Event, int>().GetById(spec);
+            if(entity is null)
+            {
+                throw new EventNotFoundException(eventId);
+            }
+            if(entity.Status == EventStatus.Canceled)
+            {
+                throw new Exception("Event is already canceled.");
+            }
+            if (entity.Status == EventStatus.Completed)
+            {
+                throw new Exception("Completed event cannot be canceled.");
+            }
+            if(entity.OrganizerId != _currentUser.UserId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to cancel this event.");
+            }
+            entity.Status = EventStatus.Canceled;
+            entity.UpdatedBy = _currentUser.FullName;
+            entity.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.GetRepository<Event, int>().Update(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return new ServiceResponse<ReadAllEventDTO>
+            {
+                Success = true,
+                Data = _mapper.Map<ReadAllEventDTO>(entity),
+                Message = "Event canceled successfully."
+            };
+
+        }
+
+        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetUpcomingEvents()
+        {
+            var spec = new UpcomingEventsSpecification();
+            var events = await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
+            return new ServiceResponse<List<ReadAllEventDTO>>()
+            {
+                Success = true,
+                Data = _mapper.Map<List<ReadAllEventDTO>>(events),
+                Message = "Upcoming events retrieved successfully."
+            };
+
         }
     }
 }

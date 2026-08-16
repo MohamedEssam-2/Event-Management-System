@@ -1,6 +1,7 @@
 ﻿using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.Service.Interface;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,21 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(events);
         }
 
+        [HttpGet("MyEvents")]
+        [Authorize(Roles = "Admin,Organizer")]
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetMyEvents()
+        {
+            var events = await _service.GetMyEvents();
+            return Ok(events);
+        }
+        [HttpGet("Upcoming")]
+        //[Authorize(Roles = "Admin,Organizer")]
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetUpcomingEvents()
+        {
+            var events = await _service.GetUpcomingEvents();
+            return Ok(events);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin,Organizer")]
         public async Task<ActionResult<ReadAllEventDTO>> Create([FromForm] CreateEventDTO eventDTO)
@@ -51,6 +67,13 @@ namespace Presentation_Logic_Layer.Controllers
         {
             var updatedEvent = await _service.UpdateEvent(id,eventDTO);
             return Ok(updatedEvent);
+        }
+        [HttpPatch("CancelEvent")]
+        [Authorize(Roles = "Admin,Organizer")]
+        public async Task<ActionResult<ReadAllEventDTO>> CancelEvent(int eventId)
+        {
+            var canceledEvent = await _service.CancelEvent(eventId);
+            return Ok(canceledEvent);
         }
 
         [HttpDelete("Delete")]
