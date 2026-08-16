@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.CloudinaryDTO;
+using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Service.Interface;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -27,11 +28,11 @@ namespace Business_Logic_Layer.Service.Implementation
         public async Task<PhotoUploadResultDTO> UploadImageAsync(IFormFile file, string folder)
         {
             if (file == null || file.Length == 0)
-                throw new Exception("Image is required.");
+                throw new BadRequestException("Image is required.");
 
 
             if (!file.ContentType.StartsWith("image/"))
-                throw new Exception("Invalid file type.");
+                throw new BadRequestException("Invalid file type.");
 
             await using var stream = file.OpenReadStream();
 
@@ -43,7 +44,7 @@ namespace Business_Logic_Layer.Service.Implementation
             var result = await _cloudinary.UploadAsync(uploadParams);
 
             if (result.Error != null)
-                throw new Exception(result.Error.Message);
+                throw new BadRequestException(result.Error.Message);
 
             return new PhotoUploadResultDTO
             {
@@ -61,11 +62,11 @@ namespace Business_Logic_Layer.Service.Implementation
             var result = await _cloudinary.DestroyAsync(deleteParams);
 
             if (result.Error is not null)
-                throw new Exception(result.Error.Message);
+                throw new BadRequestException(result.Error.Message);
 
             if (result.Result != "ok" && result.Result != "not found")
             {
-                throw new Exception("Image delete failed.");
+                throw new BadRequestException("Image delete failed.");
             }
         }
     }

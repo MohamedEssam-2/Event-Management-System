@@ -96,10 +96,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new UnauthorizedException("Invalid email or password");
             }
-            if (!user.EmailConfirmed)
-            {
-                throw new UnauthorizedException("Please confirm your email before logging in.");
-            }
+            //if (!user.EmailConfirmed)
+            //{
+            //    throw new UnauthorizedException("Please confirm your email before logging in.");
+            //}
             var accessToken = await CreateTokenAsync(user);
 
             var refreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
@@ -125,7 +125,7 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             if (user.EmailConfirmed)
             {
-                throw new Exception("Email is already confirmed");
+                throw new BadRequestException("Email is already confirmed");
             }
             await SendConfirmationEmail(user);
         }
@@ -134,7 +134,7 @@ namespace Business_Logic_Layer.Service.Implementation
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                throw new Exception("UserId and token are required");
+                throw new BadRequestException("UserId and token are required");
             }
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -143,7 +143,7 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             if (user.EmailConfirmed)
             {
-                throw new Exception("Email is already confirmed");
+                throw new BadRequestException("Email is already confirmed");
             }
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
@@ -210,7 +210,7 @@ namespace Business_Logic_Layer.Service.Implementation
             }
             if (!result.Any())
             {
-                throw new Exception("No users found");
+                throw new NotFoundException("No users found");
             }
             return result;
         }
@@ -228,13 +228,11 @@ namespace Business_Logic_Layer.Service.Implementation
             var user = await _userManager.FindByIdAsync(storedToken.UserId);
             if (user == null)
             {
-                throw new UserNotFoundException(
-                    storedToken.UserId);
+                throw new UserNotFoundException(storedToken.UserId);
             }
             if (!user.EmailConfirmed)
             {
-                throw new UnauthorizedException(
-                    "Please confirm your email before continuing.");
+                throw new UnauthorizedException("Please confirm your email before continuing.");
             }
 
             // 4. Revoke the old refresh token

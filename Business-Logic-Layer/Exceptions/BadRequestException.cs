@@ -7,8 +7,20 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.Exceptions
 {
-    public class BadRequestException(List<string> errors) : AppException("Bad Request", (int)HttpStatusCode.BadRequest)
+    public class BadRequestException : AppException
     {
-        public List<string> Errors { get; } = errors;
+        public List<string> Errors { get; }
+
+        
+        public BadRequestException(string error): base(error, (int)HttpStatusCode.BadRequest)
+        {
+            Errors = new List<string> { error };
+        }
+
+      
+        public BadRequestException(List<string> errors): base("Bad Request", (int)HttpStatusCode.BadRequest)
+        {
+            Errors = errors;
+        }
     }
 }

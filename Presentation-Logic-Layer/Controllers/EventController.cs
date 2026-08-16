@@ -46,7 +46,7 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(events);
         }
         [HttpGet("Upcoming")]
-        //[Authorize(Roles = "Admin,Organizer")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<ReadAllEventDTO>>> GetUpcomingEvents()
         {
             var events = await _service.GetUpcomingEvents();
