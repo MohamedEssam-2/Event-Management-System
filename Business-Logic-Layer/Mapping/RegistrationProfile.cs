@@ -14,7 +14,12 @@ namespace Business_Logic_Layer.Mapping
         public RegistrationProfile()
         {
           CreateMap<Registration,RegistrationDTO>().ReverseMap();
-          CreateMap<Registration, ReadAllRegistrationDTO>().ReverseMap();
+          CreateMap<Registration, ReadAllRegistrationDTO>()
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.Event.Name))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ReverseMap();
+
         }
     }
 }

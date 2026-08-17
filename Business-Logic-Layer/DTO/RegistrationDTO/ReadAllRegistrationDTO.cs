@@ -12,8 +12,11 @@ namespace Business_Logic_Layer.DTO.RegistrationDTO
     {
         public int Id { get; set; }
         public DateTime? RegistrationDate { get; set; }
-
         public int EventId { get; set; }
+        public string EventName { get; set; } = null!;
         public string UserId { get; set; } = null!;
+        public string FullName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+
     }
 }

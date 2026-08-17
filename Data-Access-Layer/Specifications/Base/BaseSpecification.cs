@@ -22,9 +22,9 @@ namespace Data_Access_Layer.Specifications.Base
 
 
     
-        public Expression<Func<TEntity, object>> OrderBy { get; private set; }
+        public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
 
-        public Expression<Func<TEntity, object>> OrderByDescending { get; private set; }
+        public Expression<Func<TEntity, object>>? OrderByDescending { get; private set; }
 
         public void AddOrderBy(Expression<Func<TEntity, object>> orderBy)
         {

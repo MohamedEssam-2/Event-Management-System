@@ -9,5 +9,6 @@ namespace Business_Logic_Layer.DTO.RegistrationDTO
     public class UpdateRegistrationDTO
     {
         public DateTime? RegistrationDate { get; set; }
+
     }
 }

@@ -9,6 +9,7 @@ using Data_Access_Layer.Repository.Interface;
 using Data_Access_Layer.Specifications;
 using Data_Access_Layer.Specifications.Interface;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Data_Access_Layer.Repository.Implementation
 {
@@ -51,6 +52,14 @@ namespace Data_Access_Layer.Repository.Implementation
             return await query.ToListAsync();
         }
 
-      
+        public async Task<int> CountAsync(ISpecification<TEntity, TKey> specification)
+        {
+            IQueryable<TEntity> Query = _context.Set<TEntity>();
+            if(specification.Criteria is not null)
+            {
+                Query = Query.Where(specification.Criteria);
+            }
+            return await Query.CountAsync();
+        }
     }
 }

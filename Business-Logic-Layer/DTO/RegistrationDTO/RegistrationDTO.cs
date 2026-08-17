@@ -9,11 +9,10 @@ namespace Business_Logic_Layer.DTO.RegistrationDTO
 {
     public class RegistrationDTO
     {
-       
-        public DateTime? RegistrationDate { get; set; }
         [Required]
         public int EventId { get; set; }
-        [Required]
-        public string UserId { get; set; } = null!;
+        //public DateTime? RegistrationDate { get; set; }
+        //[Required]
+        //public string UserId { get; set; } = null!;
     }
 }

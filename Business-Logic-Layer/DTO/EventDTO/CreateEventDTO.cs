@@ -30,10 +30,13 @@ namespace Business_Logic_Layer.DTO.EventDTO
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "CategoryId must be Enterd here .")]
+        [Range(1, 100000)]
         public int CategoryId { get; set; }
 
         [Required(ErrorMessage = "OrganizerId must be Enterd here .")]
+       
         public string OrganizerId { get; set; } = null!;
+        public string? Description { get; set; }
         public IFormFile? Image { get; set; }
     }
 }

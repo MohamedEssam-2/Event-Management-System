@@ -24,6 +24,13 @@ namespace Presentation_Logic_Layer.Controllers
             var createdRegistration = await _registrationService.CreateRegistration(registrationDTO);
             return Ok(createdRegistration);
         }
+        [HttpPost("MyRegistrations")]
+        [Authorize(Roles = "Admin,Attendee")]
+        public async Task<IActionResult> GetMyRegistrations()
+        {
+            var myRegistrations = await _registrationService.GetMyRegistration();
+            return Ok(myRegistrations);
+        }
         [HttpGet("{id:int}")]
         [Authorize(Roles = "Admin,Organizer,Attendee")]
         public async Task<IActionResult> GetRegistrationById(int id)
@@ -31,13 +38,13 @@ namespace Presentation_Logic_Layer.Controllers
             var registration = await _registrationService.GetRegistrationById(id);
             return Ok(registration);
         }
-        [HttpPatch("{id:int}")]
-        [Authorize(Roles = "Admin,Attendee")]
-        public async Task<IActionResult> UpdateRegistration(int id, [FromForm] UpdateRegistrationDTO registrationDTO)
-        {
-            var updated = await _registrationService.UpdateRegistration(id, registrationDTO);
-            return Ok(updated);
-        }
+        //[HttpPatch("{id:int}")]
+        //[Authorize(Roles = "Admin,Attendee")]
+        //public async Task<IActionResult> UpdateRegistration(int id, [FromForm] UpdateRegistrationDTO registrationDTO)
+        //{
+        //    var updated = await _registrationService.UpdateRegistration(id, registrationDTO);
+        //    return Ok(updated);
+        //}
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin,Attendee")]
         public async Task<IActionResult> DeleteRegistration(int id)

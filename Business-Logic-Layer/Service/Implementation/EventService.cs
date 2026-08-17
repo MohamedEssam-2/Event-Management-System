@@ -25,11 +25,18 @@ namespace Business_Logic_Layer.Service.Implementation
     {
         public async Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO)
         {
-
             var user = await _userManager.FindByIdAsync(eventDTO.OrganizerId);
             if (user == null)
             {
                 throw new UserNotFoundException(eventDTO.OrganizerId);
+            }
+            if(eventDTO.Date.Date < DateTime.UtcNow.Date)
+            {
+                throw new BadRequestException("Event date cannot be in the past.");
+            }
+            if (user.Id != _currentUser.UserId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to create an event for this organizer.");
             }
 
             var Category =await _unitOfWork.GetRepository<Category,int>().GetById(eventDTO.CategoryId);

@@ -14,11 +14,12 @@ namespace Data_Access_Layer.Repository.Interface
         {
         public Task<IEnumerable<TEntity>> GetAll(ISpecification<TEntity,TKey>spec);
         public Task<List<TEntity>> GetAll();
-          public Task<TEntity?> GetById(TKey id);
+        public Task<TEntity?> GetById(TKey id);
         public Task<TEntity?> GetById(ISpecification<TEntity, TKey> specification);
         public Task<TEntity> Create(TEntity entity);
-          public void Update(TEntity entity);
-          public void Delete(TEntity entity);
-        }
+        public void Update(TEntity entity);
+        public void Delete(TEntity entity);
+        public Task<int> CountAsync(ISpecification<TEntity, TKey> specification);
+    }
     
 }
