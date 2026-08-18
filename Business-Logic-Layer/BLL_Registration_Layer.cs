@@ -28,6 +28,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<IUploadService, UploadService>();
             Services.AddScoped<IEmailService, EmailService>();
             Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            Services.AddScoped<IReviewService, ReviewService>();
 
             return Services;
         }
