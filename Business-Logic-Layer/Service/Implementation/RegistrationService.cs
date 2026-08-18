@@ -167,8 +167,13 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new RegistrationNotFoundException(id);
             }
+            if (registration.UserId != _currentUser.UserId)
+            {
+                throw new UnauthorizedException(
+                    "You are not authorized to cancel this registration.");
+            }
             registration.DeletedBy = _currentUser.FullName;
-            registration.DeletedDate = DateTime.Now;
+            registration.DeletedDate = DateTime.UtcNow;
            _unitOfWork.GetRepository<Registration, int>().Delete(registration);
             await _unitOfWork.SaveChangesAsync();
             return new ServiceResponse<bool>

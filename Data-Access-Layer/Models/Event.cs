@@ -31,5 +31,6 @@ namespace Data_Access_Layer.Models
 
         // Navigation property for registrations
         public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+        public ICollection<Review> Reviews { get; set; }= new List<Review>();
     }
 }

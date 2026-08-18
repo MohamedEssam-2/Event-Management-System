@@ -24,7 +24,7 @@ namespace Presentation_Logic_Layer.Controllers
             var createdRegistration = await _registrationService.CreateRegistration(registrationDTO);
             return Ok(createdRegistration);
         }
-        [HttpPost("MyRegistrations")]
+        [HttpGet("MyRegistrations")]
         [Authorize(Roles = "Admin,Attendee")]
         public async Task<IActionResult> GetMyRegistrations()
         {
