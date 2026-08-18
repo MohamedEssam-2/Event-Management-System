@@ -26,6 +26,7 @@ namespace Data_Access_Layer.Database
         public DbSet<Registration> Registrations { get; set; } = null!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<Wishlist> Wishlists { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
