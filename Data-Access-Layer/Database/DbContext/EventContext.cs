@@ -27,6 +27,7 @@ namespace Data_Access_Layer.Database
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Order> Orders { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -40,6 +41,8 @@ namespace Data_Access_Layer.Database
             builder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
 
             builder.Entity<Registration>().HasQueryFilter(x => !x.IsDeleted);
+
+            builder.Entity<Order>().HasQueryFilter(x => !x.IsDeleted);
 
         }
     }

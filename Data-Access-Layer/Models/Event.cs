@@ -33,5 +33,6 @@ namespace Data_Access_Layer.Models
         public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
         public ICollection<Review> Reviews { get; set; }= new List<Review>();
         public ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

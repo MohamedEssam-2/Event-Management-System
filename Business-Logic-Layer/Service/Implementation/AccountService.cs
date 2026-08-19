@@ -96,10 +96,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new UnauthorizedException("Invalid email or password");
             }
-            //if (!user.EmailConfirmed)
-            //{
-            //    throw new UnauthorizedException("Please confirm your email before logging in.");
-            //}
+            if (!user.EmailConfirmed)
+            {
+                throw new UnauthorizedException("Please confirm your email before logging in.");
+            }
             var accessToken = await CreateTokenAsync(user);
 
             var refreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
