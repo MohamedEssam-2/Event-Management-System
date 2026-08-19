@@ -24,8 +24,8 @@ namespace Data_Access_Layer.Database.Configurations
                    .IsRequired()
                    .HasDefaultValue(OrderStatus.Pending);
 
-            builder.Property(o => o.OrderDate)
-                   .HasDefaultValueSql("GETDATE()");
+            //builder.Property(o => o.OrderDate)
+            //       .HasDefaultValueSql("GETDATE()");
 
             // User -> Orders
             builder.HasOne(o => o.User)

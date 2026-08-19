@@ -8,10 +8,10 @@ namespace Data_Access_Layer.Enum
 {
     public enum OrderStatus
     {
-        Pending,
-        Paid,
-        Failed,
-        Canceled,
-        Expired
+        Pending=1,
+        Paid=2,
+        Failed=3,
+        Canceled=4,
+        Expired=5
     }
 }

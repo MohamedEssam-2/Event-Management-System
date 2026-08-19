@@ -58,10 +58,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new BadRequestException("Cannot register for an event that is Completed.");
             }
-            //if (eventEntity.Price > 0)
-            //{
-            //    throw new BadRequestException("Cannot register for a paid event.");
-            //}
+            if (eventEntity.Price > 0)
+            {
+                throw new BadRequestException("Cannot register for a paid event.");
+            }
             var registrationSpec = new UserEventRegistrationSpecification(userId, registrationDTO.EventId);
             var existingUserRegistration = await _unitOfWork.GetRepository<Registration, int>().CountAsync(registrationSpec);
             if (existingUserRegistration > 0)
