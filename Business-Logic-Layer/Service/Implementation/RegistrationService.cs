@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager , ICurrentUserService _currentUser) : IRegistrationService
+    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager , ICurrentUserService _currentUser , INotificationService _notificationService) : IRegistrationService
     {
         public async Task<ServiceResponse<int>> CreateRegistration(RegistrationDTO registrationDTO)
         {
@@ -84,6 +84,7 @@ namespace Business_Logic_Layer.Service.Implementation
             registration.CreatedAt = DateTime.UtcNow;
             await _unitOfWork.GetRepository<Registration,int>().Create(registration);
             await _unitOfWork.SaveChangesAsync();
+            await _notificationService.RegistrationNotification(user.Email!, user.FullName, eventEntity.Name, eventEntity.Date ,eventEntity.Location);
             return new ServiceResponse<int>
             {
                 Data = registration.Id,
@@ -91,6 +92,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 Message = "Regisration Created Successfully"
             };
         }
+
 
       
 

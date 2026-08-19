@@ -30,6 +30,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             Services.AddScoped<IReviewService, ReviewService>();
             Services.AddScoped<IWishlistService, WishlistService>();
+            Services.AddScoped<INotificationService, NotificationService>();
 
             return Services;
         }
