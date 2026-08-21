@@ -28,6 +28,7 @@ namespace Data_Access_Layer.Database
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<Payment> Payments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
