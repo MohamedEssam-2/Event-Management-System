@@ -46,10 +46,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new BadRequestException("Cannot register for a deleted event.");
             }
-            //if (eventEntity.Date.Date < DateTime.UtcNow.Date)
-            //{
-            //    throw new BadRequestException("Cannot register for an event that has already occurred.");
-            //}
+            if (eventEntity.Date.Date < DateTime.UtcNow.Date)
+            {
+                throw new BadRequestException("Cannot register for an event that has already occurred.");
+            }
             if (eventEntity.Status== EventStatus.Canceled)
             {
                 throw new BadRequestException("Cannot register for an event that is not active.");

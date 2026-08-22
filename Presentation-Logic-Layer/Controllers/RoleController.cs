@@ -1,5 +1,6 @@
 ﻿using Business_Logic_Layer;
 using Data_Access_Layer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +13,16 @@ namespace Presentation_Logic_Layer.Controllers
     {
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var roles = await _roleManager.Roles.Select(e => e.Name).ToListAsync();
-            //var users= _userManager.Users.ToListAsync();
-
             return Ok(roles);
         }
 
 
         [HttpPost("{roleName:alpha}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(string roleName)
         {
             var roleExists = await _roleManager.RoleExistsAsync(roleName);
@@ -37,6 +38,7 @@ namespace Presentation_Logic_Layer.Controllers
         }
 
         [HttpPost("AssignRole/{userId}/{roleName:alpha}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -47,7 +49,7 @@ namespace Presentation_Logic_Layer.Controllers
             var roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists)
             {
-                return NotFound(new ServiceResponse<bool> { Success = false, Message = $"Cannot Find Role With This Name = {roleExists}" });
+                return NotFound(new ServiceResponse<bool> { Success = false, Message = $"Cannot Find Role With This Name = {roleName}" });
             }
             var result = await _userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
@@ -62,6 +64,7 @@ namespace Presentation_Logic_Layer.Controllers
         }
 
         [HttpDelete("UnAssignRole/{userId}/{roleName:alpha}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UnAssignRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -86,6 +89,7 @@ namespace Presentation_Logic_Layer.Controllers
 
 
         [HttpDelete("{roleName:alpha}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string roleName)
         {
             var role = await _roleManager.FindByNameAsync(roleName);
@@ -98,10 +102,10 @@ namespace Presentation_Logic_Layer.Controllers
             {
                 foreach (var user in users)
                 {
-                    var result = _userManager.RemoveFromRoleAsync(user, roleName);
-                    if (result == null)
+                    var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+                    if (!result.Succeeded)
                     {
-                        return BadRequest(new ServiceResponse<bool> { Success = false, Message = "Remove the role is failed." });
+                        return BadRequest(new ServiceResponse<bool> { Success = false, Message = $"Failed to remove role from user {user.UserName}." });
                     }
                 }
             }

@@ -17,7 +17,7 @@ using Stripe.Checkout;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class PaymentService(IUnitOfWork _unitOfWork, ICurrentUserService _currentUser, IOptions<StripeSettings> _stripeSettings) : IPaymentService
+    public class PaymentService(IUnitOfWork _unitOfWork, ICurrentUserService _currentUser, IOptions<StripeSettings> _stripeSettings , INotificationService _notificationService) : IPaymentService
     {
         public async Task<ServiceResponse<PaymentResponseDTO>> CreateCheckoutSession(int orderId)
         {
@@ -131,7 +131,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 {
                     return;
                 }
-                var order =await _unitOfWork.GetRepository<Order, int>().GetById(orderId);
+                var order = await _unitOfWork.GetRepository<Order, int>().GetById(new OrderWithUserAndEventSpecification(orderId));
                 if (order == null)
                 {
                     throw new NotFoundException($"Order with Id {orderId} is not found.");
@@ -154,8 +154,10 @@ namespace Business_Logic_Layer.Service.Implementation
                         CreatedBy ="Stripe Webhook"
                     };
                     await _unitOfWork.GetRepository<Registration, int>().Create(registration);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _notificationService.PaymentCompletedNotification(order.User.Email!,order.User.FullName,order.Event.Name,order.Event.Date,order.Event.Location,order.Amount);
+
                 }
-                await _unitOfWork.SaveChangesAsync();
             }
         }
 

@@ -9,6 +9,7 @@ namespace Business_Logic_Layer.Service.Implementation
 {
     public class NotificationService(IEmailService _emailService) : INotificationService
     {
+
         public async Task RegistrationNotification(string userEmail, string userName, string eventName, DateTime eventDate , string eventLocation)
         {
             var subject = "Event Registration Confirmation";
@@ -21,5 +22,22 @@ namespace Business_Logic_Layer.Service.Implementation
 
             await _emailService.SendEmailAsync(userEmail, subject, body);
         }
+        public async Task PaymentCompletedNotification(string userEmail, string userName, string eventName, DateTime eventDate,string eventLocation, decimal amount)
+        {
+            var subject = "Payment Completed Successfully";
+
+            var body = $@"
+                      <h2>Hello {userName},</h2>
+                      <p>Your payment for <b>{eventName}</b> has been completed successfully.</p>
+                      <p><b>Date:</b> {eventDate:dd/MM/yyyy hh:mm tt}</p>
+                      <p><b>Location:</b> {eventLocation}</p>
+                      <p><b>Amount Paid:</b> {amount:C}</p>
+                      <p>Your registration has been confirmed.</p>
+                      <p>Thank you for your purchase!</p>";
+
+            await _emailService.SendEmailAsync(userEmail,subject,body);
+        }
     }
+
+
 }
