@@ -9,9 +9,7 @@ namespace Business_Logic_Layer.DTO.PaymentDTO
     public class PaymentResponseDTO
     {
         public int PaymentId { get; set; }
-
         public int OrderId { get; set; }
-
         public string CheckoutUrl { get; set; } = null!;
     }
 }

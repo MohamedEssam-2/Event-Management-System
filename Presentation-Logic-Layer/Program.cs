@@ -1,6 +1,7 @@
 using System.Text;
 using Business_Logic_Layer;
 using Business_Logic_Layer.DTO.AccountDTO;
+using Business_Logic_Layer.DTO.PaymentDTO;
 using Data_Access_Layer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -14,17 +15,10 @@ namespace Presentation_Logic_Layer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen(); 
             builder.Services.DALServices(builder.Configuration);
             builder.Services.BLL_Registration(builder.Configuration);
-            builder.Services.AddControllers();
-
-            builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen(options =>
             {
@@ -37,7 +31,7 @@ namespace Presentation_Logic_Layer
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "Enter your JWT token.\nExample: Bearer eyJhbGciOiJIUzI1NiIs...",
+                    Description = "Enter your JWT token.\nExample: eyJhbGciOiJIUzI1NiIs...",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
@@ -61,10 +55,10 @@ namespace Presentation_Logic_Layer
     });
             });
 
-            builder.Services.Configure<JwtOptions>(
-                builder.Configuration.GetSection("JwtOptions"));
-
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
             var jwt = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
             builder.Services.AddAuthentication(options =>
             {
@@ -93,8 +87,6 @@ namespace Presentation_Logic_Layer
 
             builder.Services.AddAuthorization();
 
-
-
             var app = builder.Build();
 
 
@@ -108,12 +100,9 @@ namespace Presentation_Logic_Layer
 
             app.UseSwagger();
             app.UseSwaggerUI();
-
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
 
 
