@@ -134,10 +134,10 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new BadRequestException("Cannot delete a paid order.");
             }
-            //if (order.Status == OrderStatus.Pending)
-            //{
-            //    throw new BadRequestException("Order is already canceled.");
-            //}
+            if (order.Status == OrderStatus.Canceled)
+            {
+                throw new BadRequestException("Order is already canceled.");
+            }
             order.DeletedBy = _currentUser.FullName;
             order.DeletedDate = DateTime.UtcNow;
             _unitOfWork.GetRepository<Order, int>().Delete(order);
@@ -184,7 +184,7 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public async Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetAllOrders(int PageIndex, int PageSize, string? sortBy)
         {
-            var spec = new AllOrdersSpecification(PageIndex,PageSize,sortBy);
+            var spec = new AllOrdersSpecification(PageIndex,PageSize,sortBy!);
             var orders = await _unitOfWork.GetRepository<Order, int>().GetAll(spec);
             var orderDTOs = _mapper.Map<List<ReadOrderDTO>>(orders);
             var totalOrders = await _unitOfWork.GetRepository<Order, int>().CountAsync(spec);
@@ -200,6 +200,89 @@ namespace Business_Logic_Layer.Service.Implementation
                 Success = true,
                 Message = "Orders retrieved successfully.",
                 Data = result
+            };
+
+        }
+
+        public async Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetOrdersByEventId(int EventId, int PageIndex, int PageSize, string? sortBy)
+        {
+            var userId = _currentUser.UserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("User is not authenticated.");
+            }
+            var eventResult =await _unitOfWork.GetRepository<Event, int>().GetById(EventId);
+            if (eventResult == null)
+            {
+                throw new EventNotFoundException(EventId);
+            }
+            if(eventResult.IsDeleted)
+            {
+                throw new EventNotFoundException(EventId);
+            }
+            if (eventResult.Status == EventStatus.Canceled)
+            {
+                throw new BadRequestException("Event is canceled.");
+            }
+            var spec = new OrdersByEventIdSpecification(EventId, PageIndex, PageSize, sortBy);
+            var orders = await _unitOfWork.GetRepository<Order, int>().GetAll(spec);
+            var eventOrderDTOs = _mapper.Map<List<ReadOrderDTO>>(orders);
+            var totalOrders = await _unitOfWork.GetRepository<Order, int>().CountAsync(spec);
+            var result = new PagedResultDTO<ReadOrderDTO>
+            {
+                TotalCount = totalOrders,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = eventOrderDTOs
+            };
+            return new ServiceResponse<PagedResultDTO<ReadOrderDTO>>
+            {
+                Success = true,
+                Message = "Orders retrieved successfully.",
+                Data = result
+            };
+
+        }
+
+        public async Task<ServiceResponse<ReadOrderDTO>> CancelOrder(int OrderId)
+        {
+            var userId = _currentUser.UserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("User is not authenticated.");
+            }
+            var spec = new OrdersByIdSpecification(OrderId);
+            var order = await _unitOfWork.GetRepository<Order, int>().GetById(spec);
+            if (order == null)
+            {
+                throw new NotFoundException($"Order with Id = {OrderId} is not found");
+            }
+            if(order.IsDeleted)
+            {
+                throw new NotFoundException($"Order with Id = {OrderId} is not found");
+            }
+            if (order.UserId != userId)
+            {
+                throw new UnauthorizedException("You are not authorized to cancel this order.");
+            }
+            if (order.Status == OrderStatus.Paid)
+            {
+                throw new BadRequestException("Cannot cancel a paid order.");
+            }
+            if (order.Status == OrderStatus.Canceled)
+            {
+                throw new BadRequestException("Order is already canceled.");
+            }
+                order.Status = OrderStatus.Canceled;
+                order.UpdatedBy = _currentUser.FullName;
+                order.UpdatedAt = DateTime.UtcNow;
+                _unitOfWork.GetRepository<Order, int>().Update(order);
+                await _unitOfWork.SaveChangesAsync();
+            return new ServiceResponse<ReadOrderDTO>
+            {
+                Success = true,
+                Message = "Order canceled successfully.",
+                Data = _mapper.Map<ReadOrderDTO>(order)
             };
 
         }

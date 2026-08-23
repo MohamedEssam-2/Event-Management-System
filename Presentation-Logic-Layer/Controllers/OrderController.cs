@@ -30,6 +30,13 @@ namespace Presentation_Logic_Layer.Controllers
             var order = await _orderService.GetOrderById(orderId);
             return Ok(order);
         }
+        [HttpGet("Event/{eventId:int}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<ReadOrderDTO>>> GetOrdersByEventId(int eventId, [FromQuery] int PageIndex = 1, [FromQuery] int PageSize = 5, [FromQuery] string? sortBy = null!)
+        {
+            var orders = await _orderService.GetOrdersByEventId(eventId, PageIndex, PageSize, sortBy!);
+            return Ok(orders);
+        }
 
         [HttpPost]
         [Authorize(Roles = "Attendee")]
@@ -37,6 +44,13 @@ namespace Presentation_Logic_Layer.Controllers
         {
             var orderId = await _orderService.CreateOrder(EventId);
             return Ok(orderId);
+        }
+        [HttpPatch("CancelOrder")]
+        [Authorize(Roles = "Attendee")]
+        public async Task<ActionResult<ReadOrderDTO>> CancelOrder(int OrderId)
+        {
+            var order = await _orderService.CancelOrder(OrderId);
+            return Ok(order);
         }
         [HttpDelete]
         [Authorize(Roles = "Attendee")]

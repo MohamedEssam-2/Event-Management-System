@@ -16,6 +16,8 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<ServiceResponse<bool>> DeleteOrder(int OrderId);
         public Task<ServiceResponse<ReadOrderDTO>> GetOrderById(int OrderId);
         public Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetAllOrders(int PageIndex,int PageSize,string sortBy);
+        public Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetOrdersByEventId(int EventId, int PageIndex, int PageSize, string? sortBy);
+        public Task<ServiceResponse<ReadOrderDTO>>CancelOrder(int OrderId);
 
     }
 }
