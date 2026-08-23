@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.DTO.PaginationDTO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Business_Logic_Layer.Service.Interface
 {
     public interface IEventService
     {
-        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string ?Search , int PageIndex, int PageSize,string sortBy);
+        public Task<ServiceResponse<PagedResultDTO<ReadAllEventDTO>>> GetAllEvents(string ?Search , int PageIndex, int PageSize,string? sortBy);
         public Task<ServiceResponse<ReadAllEventDTO>> GetEventById(int id);
         public Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO);
         public Task<bool> DeleteEvent(int id);
@@ -19,7 +20,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<List<ReadAllEventDTO>> GetAllEventsInCategory(int categoryid);
         public Task<ServiceResponse<List<ReadAllEventDTO>>> GetMyEvents();
         public Task<ServiceResponse<ReadAllEventDTO>> CancelEvent(int eventId);
-        public Task<ServiceResponse<List<ReadAllEventDTO>>> GetUpcomingEvents();
+        public Task<ServiceResponse<PagedResultDTO<ReadAllEventDTO>>> GetUpcomingEvents(int PageIndex,int PageSize);
 
 
     }

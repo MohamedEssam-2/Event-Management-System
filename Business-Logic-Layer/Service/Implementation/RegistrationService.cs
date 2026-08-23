@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.DTO.RegistrationDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.RegistrationExceptions;
@@ -96,27 +97,24 @@ namespace Business_Logic_Layer.Service.Implementation
 
       
 
-        public async Task<ServiceResponse<List<ReadAllRegistrationDTO>>> GetAllRegistration()
+        public async Task<ServiceResponse<PagedResultDTO<ReadAllRegistrationDTO>>> GetAllRegistration(int PageIndex,int PageSize, string? sortBy)
         {
-            var spec = new AllRegistrationsSpecification();
+            var spec = new AllRegistrationsSpecification(PageIndex,PageSize,sortBy);
             var registration = await _unitOfWork.GetRepository<Registration,int>().GetAll(spec);
-            if (!registration.Any())
-            {
-                return new ServiceResponse<List<ReadAllRegistrationDTO>>
-                {
-                    Success = true,
-                    Data = [],
-                    Message = "No Registration Found"
-                };
-            }
-
             var registrationDTOs = _mapper.Map<List<ReadAllRegistrationDTO>>(registration);
-
-            return new ServiceResponse<List<ReadAllRegistrationDTO>>
+            var totalCount = await _unitOfWork.GetRepository<Registration, int>().CountAsync(spec);
+            var result = new PagedResultDTO<ReadAllRegistrationDTO>
             {
-                Data = registrationDTOs,
+                TotalCount = totalCount,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = registrationDTOs
+            };
+            return new ServiceResponse<PagedResultDTO<ReadAllRegistrationDTO>>
+            {
                 Success = true,
-                Message = "Registrations retrieved successfully"
+                Message = "Registrations retrieved successfully",
+                Data = result,
             };
 
         }
@@ -203,6 +201,41 @@ namespace Business_Logic_Layer.Service.Implementation
                 Data = registrationDTOs,
                 Success = true,
                 Message = "Registrations retrieved successfully"
+            };
+        }
+
+        public async Task<ServiceResponse<PagedResultDTO<ReadAllRegistrationDTO>>> GetRegistrationsByEventId(int eventId , int PageIndex, int PageSize)
+        {
+            var userId = _currentUser.UserId;
+            if (userId == null)
+            {
+                throw new UnauthorizedException("User is not authenticated.");
+            }
+            var eventresult= await _unitOfWork.GetRepository<Event, int>().GetById(eventId);
+            if (eventresult is null)
+            {
+                throw new EventNotFoundException(eventId);
+            }
+            if (userId != eventresult.OrganizerId && _currentUser.Role != "Admin")
+            {
+                throw new UnauthorizedException("You are not authorized to view registrations for this event.");
+            }
+            var spec = new ReistrationByEventId(eventId,PageIndex,PageSize);
+            var registrations = await _unitOfWork.GetRepository<Registration, int>().GetAll(spec);
+            var totalCount = await _unitOfWork.GetRepository<Registration, int>().CountAsync(spec);
+            var registrationDTOs = _mapper.Map<List<ReadAllRegistrationDTO>>(registrations);
+            var result = new PagedResultDTO<ReadAllRegistrationDTO>
+            {
+                TotalCount = totalCount,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = registrationDTOs
+            };
+            return new ServiceResponse<PagedResultDTO<ReadAllRegistrationDTO>>
+            {
+                Success = true,
+                Message = "Registrations retrieved successfully",
+                Data = result,
             };
         }
     }

@@ -14,7 +14,7 @@ namespace Presentation_Logic_Layer.Controllers
         [AllowAnonymous]
         public async Task <IActionResult> GetAllCategories([FromQuery] string? Search, [FromQuery] int PageIndex = 1, [FromQuery] int PageSize = 5, [FromQuery] string? sortBy = null)
         {
-            var categories =await _categoryService.GetAllCategories(Search, PageIndex, PageSize, sortBy);
+            var categories =await _categoryService.GetAllCategories(Search, PageIndex, PageSize, sortBy!);
             return Ok(categories);
         }
         [HttpGet("{categoryId:int}")]

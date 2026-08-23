@@ -19,5 +19,8 @@ namespace Business_Logic_Layer.Service.Implementation
 
         public string? Email =>_httpContextAccessor.HttpContext?.User
                 .FindFirst(ClaimTypes.Email)?.Value;
+
+        public string? Role => _httpContextAccessor.HttpContext?.User
+            .FindFirst(ClaimTypes.Role)?.Value;
     }
 }

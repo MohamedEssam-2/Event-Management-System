@@ -11,9 +11,9 @@ namespace Presentation_Logic_Layer.Controllers
     {
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<List<ReadOrderDTO>>> GetAllOrders()
+        public async Task<ActionResult<List<ReadOrderDTO>>> GetAllOrders([FromQuery] int PageIndex = 1, [FromQuery] int PageSize = 5, [FromQuery] string? sortBy=null!)
         {
-            var orders = await _orderService.GetAllOrders();
+            var orders = await _orderService.GetAllOrders(PageIndex , PageSize,sortBy!);
             return Ok(orders);
         }
         [HttpGet("MyOrders")]

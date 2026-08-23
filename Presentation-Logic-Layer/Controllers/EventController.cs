@@ -13,7 +13,7 @@ namespace Presentation_Logic_Layer.Controllers
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search , [FromQuery] int PageIndex = 1, [FromQuery] int PageSize=5, [FromQuery] string? sortBy = null)
+        public async Task<ActionResult<PagedResultDTO<ReadAllEventDTO>>> GetAll([FromQuery]string ?Search , [FromQuery] int PageIndex = 1, [FromQuery] int PageSize=5, [FromQuery] string? sortBy = null)
         {
             var events = await _service.GetAllEvents(Search, PageIndex, PageSize,sortBy);
 
@@ -47,9 +47,9 @@ namespace Presentation_Logic_Layer.Controllers
         }
         [HttpGet("Upcoming")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<ReadAllEventDTO>>> GetUpcomingEvents()
+        public async Task<ActionResult<List<ReadAllEventDTO>>> GetUpcomingEvents([FromQuery] int PageIndex=1, [FromQuery] int PageSize=5)
         {
-            var events = await _service.GetUpcomingEvents();
+            var events = await _service.GetUpcomingEvents(PageIndex, PageSize);
             return Ok(events);
         }
 

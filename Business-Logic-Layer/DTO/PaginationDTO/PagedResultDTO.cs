@@ -12,7 +12,7 @@ namespace Business_Logic_Layer.DTO.PaginationDTO
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
-        public bool HasPreviousPAge => PageIndex > 1;
+        public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
         public List<TEntity> Data { get; set; } = new();
     }

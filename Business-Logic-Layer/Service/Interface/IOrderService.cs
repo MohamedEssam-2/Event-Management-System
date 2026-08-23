@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.OrderDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Business_Logic_Layer.Service.Interface
 {
@@ -13,7 +15,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<ServiceResponse<List<ReadOrderDTO>>> GetMyOrders();
         public Task<ServiceResponse<bool>> DeleteOrder(int OrderId);
         public Task<ServiceResponse<ReadOrderDTO>> GetOrderById(int OrderId);
-        public Task<ServiceResponse<List<ReadOrderDTO>>> GetAllOrders();
+        public Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetAllOrders(int PageIndex,int PageSize,string sortBy);
 
     }
 }

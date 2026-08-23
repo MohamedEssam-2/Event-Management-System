@@ -12,9 +12,9 @@ namespace Presentation_Logic_Layer.Controllers
     {
         [HttpGet]
         [Authorize(Roles = "Admin,Organizer")]
-        public async Task<IActionResult> GetAllRegistrations()
+        public async Task<IActionResult> GetAllRegistrations([FromQuery] int PageIndex=1,[FromQuery] int PageSize=5, [FromQuery] string? sortBy=null)
         {
-            var registrations = await _registrationService.GetAllRegistration();
+            var registrations = await _registrationService.GetAllRegistration(PageIndex,PageSize,sortBy);
             return Ok(registrations);
         }
         [HttpPost]
@@ -37,6 +37,13 @@ namespace Presentation_Logic_Layer.Controllers
         {
             var registration = await _registrationService.GetRegistrationById(id);
             return Ok(registration);
+        }
+        [HttpGet("Event/{eventId:int}")]
+        [Authorize(Roles = "Admin,Organizer")]
+        public async Task<IActionResult> GetRegistrationsByEventId(int eventId, [FromQuery] int PageIndex = 1, [FromQuery] int PageSize = 5)
+        {
+            var registrations = await _registrationService.GetRegistrationsByEventId(eventId, PageIndex , PageSize);
+            return Ok(registrations);
         }
         //[HttpPatch("{id:int}")]
         //[Authorize(Roles = "Admin,Attendee")]

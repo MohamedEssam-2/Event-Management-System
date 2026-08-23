@@ -161,7 +161,7 @@ namespace Business_Logic_Layer.Service.Implementation
             var baseUrl = _configuration["ServerSettings:BaseUrl"];
 
             var confirmationLink =
-                $"{baseUrl.TrimEnd('/')}/api/account/ConfirmEmail" +
+                $"{baseUrl!.TrimEnd('/')}/api/account/ConfirmEmail" +
                 $"?userId={user.Id}" +
                 $"&token={Uri.EscapeDataString(token)}";
 
@@ -220,7 +220,7 @@ namespace Business_Logic_Layer.Service.Implementation
 
             var storedToken = await _refreshTokenService.GetByRefreshToken(token);
             
-            if (storedToken.ExpiresAt <= DateTime.UtcNow)
+            if (storedToken!.ExpiresAt <= DateTime.UtcNow)
             {
                 throw new UnauthorizedException(
                     "Refresh token has expired");
@@ -269,7 +269,7 @@ namespace Business_Logic_Layer.Service.Implementation
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var BaseUrl = _configuration["ServerSettings:BaseUrl"];
             var resetLink =
-                            $"{BaseUrl.TrimEnd('/')}/api/account/ResetPassword" +
+                            $"{BaseUrl!.TrimEnd('/')}/api/account/ResetPassword" +
                             $"?userId={user.Id}" +
                             $"&token={Uri.EscapeDataString(token)}";
 

@@ -9,7 +9,7 @@ namespace Presentation_Logic_Layer.Controllers
     [Route("api/[controller]")]
     public class WishlistController(IWishlistService _wishlistService ) :ControllerBase
     {
-        [HttpGet]
+        [HttpGet("MyWishlist")]
         [Authorize(Roles = "Attendee")]
         public async Task<ActionResult<List<ReadWishlistDTO>>> GetWishlist()
         {

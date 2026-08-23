@@ -6,7 +6,7 @@ namespace Presentation_Logic_Layer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PaymentController(IPaymentService _paymentService): ControllerBase
+    public class PaymentController(IPaymentService _paymentService , ILogger<PaymentController> _logger) : ControllerBase
     {
         [HttpPost("CreateCheckoutSession/{orderId:int}")]
         [Authorize(Roles = "Admin,Attendee")]
@@ -24,21 +24,14 @@ namespace Presentation_Logic_Layer.Controllers
             {
                 using var reader = new StreamReader(Request.Body);
                 var json = await reader.ReadToEndAsync();
-
                 var stripeSignature = Request.Headers["Stripe-Signature"].ToString();
-
-                await _paymentService.HandleWebhookAsync(
-                    json,
-                    stripeSignature);
-
+                await _paymentService.HandleWebhookAsync(json,stripeSignature);
                 return Ok();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("========== STRIPE WEBHOOK ERROR ==========");
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine("==========================================");
-                return StatusCode(500, ex.ToString());
+                _logger.LogError(ex, "Stripe webhook processing failed.");
+                return StatusCode(500, "An error occurred while processing the webhook.");
             }
         }
     }

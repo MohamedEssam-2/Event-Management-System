@@ -8,6 +8,7 @@ using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.DTO.CategoryDTO;
 using Business_Logic_Layer.DTO.EventDTO;
 using Business_Logic_Layer.DTO.PaginationDTO;
+using Business_Logic_Layer.DTO.RegistrationDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.CategoryExceptions;
 using Business_Logic_Layer.Exceptions.UserExceptions;
@@ -83,24 +84,31 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
-        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageIndex, int PageSize, string sortBy)
+        public async Task<ServiceResponse<PagedResultDTO<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageIndex, int PageSize, string sortBy)
         {
-            var spec = new EventWithCategorySpecification(Search, PageIndex, PageSize, sortBy);
+            var spec = new EventWithCategorySpecification(Search!, PageIndex, PageSize, sortBy);
             var Events=await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
             if (Events == null || !Events.Any())
             {
-                return new ServiceResponse<List<ReadAllEventDTO>>
+                return new ServiceResponse<PagedResultDTO<ReadAllEventDTO>>
                 {
                     Success = false,
                     Message = "Cant Find Any Event ."
                 };
             }
             var EventDTO=_mapper.Map<List<ReadAllEventDTO>>(Events);
-           
-            return new ServiceResponse<List<ReadAllEventDTO>>
+            var totalCount = await _unitOfWork.GetRepository<Event, int>().CountAsync(spec);
+            var result = new PagedResultDTO<ReadAllEventDTO>
+            {
+                TotalCount = totalCount,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = EventDTO
+            };
+            return new ServiceResponse<PagedResultDTO<ReadAllEventDTO>>
             {
                 Success = true,
-                Data = EventDTO,
+                Data = result,
                 Message = "Events Found Successfully"
             };
         }
@@ -215,7 +223,7 @@ namespace Business_Logic_Layer.Service.Implementation
             var userId = _currentUser.UserId;
             if (userId == null)
             {
-                throw new UserNotFoundException(userId);
+                throw new UserNotFoundException(userId!);
             }
             var spec = new MyEventsSpecification(userId);
             var events = await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
@@ -263,15 +271,25 @@ namespace Business_Logic_Layer.Service.Implementation
 
         }
 
-        public async Task<ServiceResponse<List<ReadAllEventDTO>>> GetUpcomingEvents()
+        public async Task<ServiceResponse<PagedResultDTO<ReadAllEventDTO>>> GetUpcomingEvents(int PageIndex, int PageSize)
         {
-            var spec = new UpcomingEventsSpecification();
+            var spec = new UpcomingEventsSpecification(PageIndex,PageSize);
             var events = await _unitOfWork.GetRepository<Event, int>().GetAll(spec);
-            return new ServiceResponse<List<ReadAllEventDTO>>()
+            var eventDTOs = _mapper.Map<List<ReadAllEventDTO>>(events);
+            var totalCount = await _unitOfWork.GetRepository<Event, int>().CountAsync(spec);
+            var result = new PagedResultDTO<ReadAllEventDTO>
+            {
+                TotalCount = totalCount,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = eventDTOs
+            };
+
+            return new ServiceResponse<PagedResultDTO<ReadAllEventDTO>>
             {
                 Success = true,
-                Data = _mapper.Map<List<ReadAllEventDTO>>(events),
-                Message = "Upcoming events retrieved successfully."
+                Message = "Upcoming events retrieved successfully.",
+                Data = result
             };
 
         }

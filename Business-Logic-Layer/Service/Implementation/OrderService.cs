@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO.OrderDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Enum;
@@ -180,17 +182,24 @@ namespace Business_Logic_Layer.Service.Implementation
             };
         }
 
-        public async Task<ServiceResponse<List<ReadOrderDTO>>> GetAllOrders()
+        public async Task<ServiceResponse<PagedResultDTO<ReadOrderDTO>>> GetAllOrders(int PageIndex, int PageSize, string? sortBy)
         {
-            var spec = new AllOrdersSpecification();
+            var spec = new AllOrdersSpecification(PageIndex,PageSize,sortBy);
             var orders = await _unitOfWork.GetRepository<Order, int>().GetAll(spec);
-
             var orderDTOs = _mapper.Map<List<ReadOrderDTO>>(orders);
-            return new ServiceResponse<List<ReadOrderDTO>>
+            var totalOrders = await _unitOfWork.GetRepository<Order, int>().CountAsync(spec);
+            var result = new PagedResultDTO<ReadOrderDTO>
+            {
+                TotalCount = totalOrders,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = orderDTOs
+            };
+            return new ServiceResponse<PagedResultDTO<ReadOrderDTO>>
             {
                 Success = true,
                 Message = "Orders retrieved successfully.",
-                Data = orderDTOs
+                Data = result
             };
 
         }

@@ -11,5 +11,6 @@ namespace Business_Logic_Layer.Service.Interface
         string? UserId { get; }
         string? FullName { get; }
         string? Email { get; }
+        string? Role { get; }
     }
 }
