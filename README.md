@@ -577,7 +577,7 @@ This allows the API to scale better than returning every event in a single respo
 ## 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/MohamedEssam-2/Event-Management-System>
 cd Event-Management-System
 ```
 
