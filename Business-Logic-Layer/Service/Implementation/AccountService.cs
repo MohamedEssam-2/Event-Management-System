@@ -22,7 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService, IRefreshTokenService _refreshTokenService) : IAccountService
+    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService, IRefreshTokenService _refreshTokenService , IBackgroundJobService _backgroundJobService) : IAccountService
     {
         public async Task<MessageDTO> Register(RegisterDTO registerDTO)
         {
@@ -171,10 +171,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 $"<a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>" +
                 $"Confirm Email</a>";
 
-            await _emailService.SendEmailAsync(
-                user.Email!,
-                "Confirm your email",
-                htmlMessage);
+            _backgroundJobService.EnqueueEmail(user.Email!,"Confirm Your Email",htmlMessage);
         }
 
         public async Task DeleteUser(string userId)
@@ -277,7 +274,7 @@ namespace Business_Logic_Layer.Service.Implementation
                             $"<h1>Reset your password</h1>" +
                             $"<p>Click the link below to reset your password:</p>" +
                             $"<a href='{HtmlEncoder.Default.Encode(resetLink)}'>Reset Password</a>";
-            await _emailService.SendEmailAsync(user.Email!, "Reset your password", htmlMessage);
+            _backgroundJobService.EnqueueEmail(user.Email!,"Reset your password",htmlMessage);
             return new MessageDTO
             {
                 Message = "Reset password link has been sent to your email."

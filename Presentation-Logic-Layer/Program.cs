@@ -2,10 +2,13 @@ using System.Text;
 using Business_Logic_Layer;
 using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.DTO.PaymentDTO;
+using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Presentation_Logic_Layer.Background;
 
 namespace Presentation_Logic_Layer
 {
@@ -19,6 +22,7 @@ namespace Presentation_Logic_Layer
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.DALServices(builder.Configuration);
             builder.Services.BLL_Registration(builder.Configuration);
+            builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
             builder.Services.AddSwaggerGen(options =>
             {
@@ -87,6 +91,24 @@ namespace Presentation_Logic_Layer
 
             builder.Services.AddAuthorization();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowAnyOrigin();
+                });
+            });
+
+            builder.Services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(
+                    builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            builder.Services.AddHangfireServer();
+
             var app = builder.Build();
 
 
@@ -101,6 +123,7 @@ namespace Presentation_Logic_Layer
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

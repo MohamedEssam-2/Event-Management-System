@@ -26,7 +26,7 @@ namespace Business_Logic_Layer.DTO.EventDTO
         public int? MaxAttendees { get; set; }
 
         [Required(ErrorMessage = "Price must be Enterd here .")]
-        [Range(1, 10000)]
+        [Range(0, 10000)]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "CategoryId must be Enterd here .")]

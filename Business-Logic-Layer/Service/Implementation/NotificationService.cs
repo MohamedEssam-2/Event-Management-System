@@ -7,10 +7,10 @@ using Business_Logic_Layer.Service.Interface;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class NotificationService(IEmailService _emailService) : INotificationService
+    public class NotificationService(IBackgroundJobService _backgroundJobService) : INotificationService
     {
 
-        public async Task RegistrationNotification(string userEmail, string userName, string eventName, DateTime eventDate , string eventLocation)
+        public  Task RegistrationNotification(string userEmail, string userName, string eventName, DateTime eventDate , string eventLocation)
         {
             var subject = "Event Registration Confirmation";
 
@@ -20,9 +20,10 @@ namespace Business_Logic_Layer.Service.Implementation
                       <p>Date: {eventDate:dd/MM/yyyy hh:mm tt}</p>
                       <p>Location: {eventLocation}</p>";
 
-            await _emailService.SendEmailAsync(userEmail, subject, body);
+            _backgroundJobService.EnqueueEmail(userEmail,subject,body);
+            return Task.CompletedTask;
         }
-        public async Task PaymentCompletedNotification(string userEmail, string userName, string eventName, DateTime eventDate,string eventLocation, decimal amount)
+        public  Task PaymentCompletedNotification(string userEmail, string userName, string eventName, DateTime eventDate,string eventLocation, decimal amount)
         {
             var subject = "Payment Completed Successfully";
 
@@ -35,7 +36,8 @@ namespace Business_Logic_Layer.Service.Implementation
                       <p>Your registration has been confirmed.</p>
                       <p>Thank you for your purchase!</p>";
 
-            await _emailService.SendEmailAsync(userEmail,subject,body);
+            _backgroundJobService.EnqueueEmail(userEmail,subject,body);
+            return Task.CompletedTask;
         }
     }
 
