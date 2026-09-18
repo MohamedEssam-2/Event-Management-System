@@ -33,6 +33,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<INotificationService, NotificationService>();
             Services.AddScoped<IOrderService, OrderService>();
             Services.AddScoped<IPaymentService, PaymentService>();
+            Services.AddScoped<ICacheService, CacheService>();
 
             return Services;
         }

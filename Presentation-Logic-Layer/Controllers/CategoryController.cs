@@ -2,6 +2,7 @@
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation_Logic_Layer.Attributes;
 
 namespace Presentation_Logic_Layer.Controllers
 {
@@ -9,7 +10,7 @@ namespace Presentation_Logic_Layer.Controllers
     [Route("api/[controller]")]
     public class CategoryController(ICategoryService _categoryService) :ControllerBase
     {
-        
+        [CacheRedis]
         [HttpGet]
         [AllowAnonymous]
         public async Task <IActionResult> GetAllCategories([FromQuery] string? Search, [FromQuery] int PageIndex = 1, [FromQuery] int PageSize = 5, [FromQuery] string? sortBy = null)
@@ -17,6 +18,8 @@ namespace Presentation_Logic_Layer.Controllers
             var categories =await _categoryService.GetAllCategories(Search, PageIndex, PageSize, sortBy!);
             return Ok(categories);
         }
+
+        [CacheRedis]
         [HttpGet("{categoryId:int}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCategoryById(int categoryId)

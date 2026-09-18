@@ -39,6 +39,7 @@ namespace Data_Access_Layer
 
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddScoped<IRefreshTokenRepo, RefreshTokenRepo>();
+            Services.AddScoped<ICacheRepository, CacheRepository>();
 
 
 

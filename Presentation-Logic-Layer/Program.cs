@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation_Logic_Layer.Background;
+using StackExchange.Redis;
 
 namespace Presentation_Logic_Layer
 {
@@ -23,6 +24,7 @@ namespace Presentation_Logic_Layer
             builder.Services.DALServices(builder.Configuration);
             builder.Services.BLL_Registration(builder.Configuration);
             builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+
 
             builder.Services.AddSwaggerGen(options =>
             {
@@ -108,6 +110,7 @@ namespace Presentation_Logic_Layer
             });
 
             builder.Services.AddHangfireServer();
+            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 
             var app = builder.Build();
 
@@ -126,6 +129,7 @@ namespace Presentation_Logic_Layer
             app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseHangfireDashboard();
             app.MapControllers();
 
 
