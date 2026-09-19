@@ -13,11 +13,8 @@ namespace Presentation_Logic_Layer.Attributes
             var cacheService = context.HttpContext.RequestServices.GetService<ICacheService>();
             var key = GenerateKey(context.HttpContext);
 
-            Console.WriteLine($"CACHE KEY: {key}");
-
             var result = await cacheService.GetAsync(key);
 
-            Console.WriteLine($"CACHE RESULT: {result}");
             //Cache Hit
             if (result != null)
             {

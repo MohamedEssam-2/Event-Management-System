@@ -10,5 +10,7 @@ namespace Data_Access_Layer.Repository.Implementation
     {
         Task<string?> GetAsync(string key);
         Task SetAsync(string key, string value, TimeSpan duration);
+        Task RemoveAsync(string key);
+        Task RemoveByPrefixAsync(string prefix);
     }
 }

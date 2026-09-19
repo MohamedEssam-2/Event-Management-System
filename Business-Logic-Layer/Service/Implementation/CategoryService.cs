@@ -16,7 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper , ICurrentUserService _currentUser , IUploadService _uplaodService) : ICategoryService
+    public class CategoryService(IUnitOfWork _unitOfWork, IMapper _mapper , ICurrentUserService _currentUser , IUploadService _uplaodService , ICacheService _cacheService) : ICategoryService
     {
         public async Task<ServiceResponse<int>> CreateCategory(CategoryDTO categoryDTO)
         {
@@ -31,6 +31,7 @@ namespace Business_Logic_Layer.Service.Implementation
             category.CreatedAt = DateTime.UtcNow;
             var CategoryRepo = await _unitOfWork.GetRepository<Category, int>().Create(category);
             await _unitOfWork.SaveChangesAsync();
+            await _cacheService.RemoveByPrefixAsync("/api/Category");
 
             return new ServiceResponse<int>
             {
@@ -53,7 +54,8 @@ namespace Business_Logic_Layer.Service.Implementation
                 category.DeletedBy = _currentUser.FullName;
                 category.DeletedDate = DateTime.UtcNow;
                 await _unitOfWork.SaveChangesAsync();
-                return new ServiceResponse<bool>
+            await _cacheService.RemoveByPrefixAsync("/api/Category");
+            return new ServiceResponse<bool>
                 {
                     Success = true,
                     Data = true,
@@ -130,6 +132,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 category.UpdatedAt = DateTime.UtcNow;
                 _unitOfWork.GetRepository<Category, int>().Update(category);
                 await _unitOfWork.SaveChangesAsync();
+                await _cacheService.RemoveByPrefixAsync("/api/Category");
 
             if (categoryDTO.Image is not null && !string.IsNullOrWhiteSpace(oldPublicId))
             {

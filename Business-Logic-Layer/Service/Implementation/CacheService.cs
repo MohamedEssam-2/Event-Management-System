@@ -26,5 +26,15 @@ namespace Business_Logic_Layer.Service.Implementation
             });
             return _repository.SetAsync(key, valueToReturn, duration);
         }
+
+        public async Task RemoveAsync(string key)
+        {
+           await _repository.RemoveAsync(key);
+        }
+
+        public async Task RemoveByPrefixAsync(string prefix)
+        {
+            await _repository.RemoveByPrefixAsync(prefix);
+        }
     }
 }

@@ -10,5 +10,7 @@ namespace Business_Logic_Layer.Service.Interface
     {
         Task<string?> GetAsync(string key);
         Task SetAsync(string key, object cacheValue, TimeSpan duration);
+        Task RemoveAsync(string key);
+        Task RemoveByPrefixAsync(string prefix);
     }
 }

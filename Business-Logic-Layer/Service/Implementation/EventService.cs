@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser , IUploadService _uplaodService) : IEventService
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser , IUploadService _uplaodService , ICacheService _cacheService) : IEventService
     {
         public async Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO)
         {
@@ -57,6 +57,7 @@ namespace Business_Logic_Layer.Service.Implementation
             CreateEntity.CreatedBy = _currentUser.FullName;
             CreateEntity.CreatedAt = DateTime.UtcNow;   
             await _unitOfWork.SaveChangesAsync();
+            await _cacheService.RemoveByPrefixAsync("/api/Event");
             return new ServiceResponse<int>
             {
                 Data = CreateEntity.Id,
@@ -80,8 +81,12 @@ namespace Business_Logic_Layer.Service.Implementation
             _unitOfWork.GetRepository<Event, int>().Delete(entity);
             entity.DeletedBy = _currentUser.FullName;
             entity.DeletedDate = DateTime.UtcNow;
-            return await _unitOfWork.SaveChangesAsync() > 0;
-
+            var result = await _unitOfWork.SaveChangesAsync();
+            if (result > 0)
+            {
+                await _cacheService.RemoveByPrefixAsync("/api/Event");
+            }
+            return result > 0;
         }
 
         public async Task<ServiceResponse<PagedResultDTO<ReadAllEventDTO>>> GetAllEvents(string? Search, int PageIndex, int PageSize, string sortBy)
@@ -197,6 +202,7 @@ namespace Business_Logic_Layer.Service.Implementation
             entity.UpdatedAt = DateTime.UtcNow;
 
             await _unitOfWork.SaveChangesAsync();
+            await _cacheService.RemoveByPrefixAsync("/api/Event");
 
             if (eventDTO.Image is not null &&  !string.IsNullOrWhiteSpace(oldPublicId))
             {
@@ -262,6 +268,7 @@ namespace Business_Logic_Layer.Service.Implementation
             entity.UpdatedAt = DateTime.UtcNow;
             _unitOfWork.GetRepository<Event, int>().Update(entity);
             await _unitOfWork.SaveChangesAsync();
+            await _cacheService.RemoveByPrefixAsync("/api/Event");
             return new ServiceResponse<ReadAllEventDTO>
             {
                 Success = true,

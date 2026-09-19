@@ -20,12 +20,23 @@ namespace Data_Access_Layer.Repository.Interface
         public async Task SetAsync(string key, string value, TimeSpan duration )
         {
             var result = await _database.StringSetAsync(key, value, duration);
-
-            Console.WriteLine($"SET RESULT: {result}");
-
             var test = await _database.StringGetAsync(key);
+        }
 
-            Console.WriteLine($"GET AFTER SET: {test}");
+        public async Task RemoveAsync(string key)
+        {
+            var result=await _database.KeyDeleteAsync(key);
+        }
+
+        public async Task RemoveByPrefixAsync(string prefix)
+        {
+            var endpoints = _connection.GetEndPoints().First();
+            var server = _connection.GetServer(endpoints);
+            var keys = server.Keys(pattern: $"{prefix}*");
+            foreach (var key in keys)
+            {
+                await _database.KeyDeleteAsync(key);
+            }
         }
     }
 }
