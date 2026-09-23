@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser , IUploadService _uplaodService , ICacheService _cacheService) : IEventService
+    public class EventService(IUnitOfWork _unitOfWork, IMapper _mapper , UserManager<ApplicationUser> _userManager , ICurrentUserService _currentUser , IUploadService _uplaodService , ICacheService _cacheService , ILogger<EventService> _logger) : IEventService
     {
         public async Task<ServiceResponse<int>> CreateEvent(CreateEventDTO eventDTO)
         {
@@ -57,6 +57,7 @@ namespace Business_Logic_Layer.Service.Implementation
             CreateEntity.CreatedBy = _currentUser.FullName;
             CreateEntity.CreatedAt = DateTime.UtcNow;   
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Event {EventId} created successfully by user {UserId}", eventDTO.Name, _currentUser.UserId);
             await _cacheService.RemoveByPrefixAsync("/api/Event");
             return new ServiceResponse<int>
             {
@@ -129,6 +130,7 @@ namespace Business_Logic_Layer.Service.Implementation
                 throw new EventNotFoundException(id);
             }
             var EventDTO =  _mapper.Map<ReadAllEventDTO>(Evetns);
+
             return new ServiceResponse<ReadAllEventDTO>
             {
                 Success = true,

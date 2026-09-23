@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation_Logic_Layer.Background;
+using Serilog;
 using StackExchange.Redis;
 
 namespace Presentation_Logic_Layer
@@ -18,6 +19,8 @@ namespace Presentation_Logic_Layer
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+             builder.Host.UseSerilog();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -114,6 +117,7 @@ namespace Presentation_Logic_Layer
 
             var app = builder.Build();
 
+            app.UseSerilogRequestLogging();
 
             app.UseMiddleware<Presentation_Logic_Layer.Middleware.Middleware>();
             // Configure the HTTP request pipeline.
