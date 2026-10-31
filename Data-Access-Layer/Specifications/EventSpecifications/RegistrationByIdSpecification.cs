@@ -14,6 +14,7 @@ namespace Data_Access_Layer.Specifications.EventSpecifications
         {
             AddInclude(e => e.User);
             AddInclude(e => e.Event);
+            AddInclude(e => e.Event.Organizer);
         }
     }
 }

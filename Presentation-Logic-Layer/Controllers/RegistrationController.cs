@@ -60,6 +60,24 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(deleted);
         }
 
-
+        [HttpGet("{id:int}/export-pdf")]
+        [Authorize(Roles = "Attendee,Admin")]
+        public async Task<IActionResult> ExportRegistrationAsPdf(int id)
+        {
+            try
+            {
+                var pdfBytes = await _registrationService.ExportRegistrationAsPdfAsync(id);
+                var fileName = $"registration_{id}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Business_Logic_Layer.Exceptions.RegistrationExceptions.RegistrationNotFoundException)
+            {
+                return NotFound(new { Message = "Registration not found." });
+            }
+            catch (Business_Logic_Layer.Exceptions.UnauthorizedException)
+            {
+                return Forbid();
+            }
+        }
     }
 }

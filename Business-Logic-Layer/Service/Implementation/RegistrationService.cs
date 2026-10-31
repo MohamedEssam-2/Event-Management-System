@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.DTO.RegistrationDTO;
+using Business_Logic_Layer.DTO.RegistrationPdfDto;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.RegistrationExceptions;
 using Business_Logic_Layer.Exceptions.UserExceptions;
@@ -20,7 +21,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager , ICurrentUserService _currentUser , INotificationService _notificationService) : IRegistrationService
+    public class RegistrationService(IUnitOfWork _unitOfWork , IMapper _mapper, UserManager<ApplicationUser>_userManager , ICurrentUserService _currentUser , INotificationService _notificationService , IRegistrationPdfService _pdfService) : IRegistrationService
     {
         public async Task<ServiceResponse<int>> CreateRegistration(RegistrationDTO registrationDTO)
         {
@@ -237,6 +238,48 @@ namespace Business_Logic_Layer.Service.Implementation
                 Message = "Registrations retrieved successfully",
                 Data = result,
             };
+        }
+        public async Task<byte[]> ExportRegistrationAsPdfAsync(int registrationId)
+        {
+            var userId = _currentUser.UserId;
+
+            if (userId == null)
+                throw new UnauthorizedException("User is not authenticated.");
+
+            var spec = new RegistrationByIdSpecification(registrationId);
+
+            var registration = await _unitOfWork
+                .GetRepository<Registration, int>()
+                .GetById(spec);
+
+            if (registration == null)
+                throw new RegistrationNotFoundException(registrationId);
+
+            if (registration.UserId != userId)
+                throw new UnauthorizedException(
+                    "You are not authorized to export this registration.");
+
+            var dto = new RegistrationPdfDto
+            {
+                RegistrationId = registration.Id,
+
+                AttendeeName = registration.User.FullName,
+                AttendeeEmail = registration.User.Email ?? "N/A",
+
+                EventTitle = registration.Event.Name,
+                EventDate = registration.Event.Date,
+                EventLocation = registration.Event.Location,
+
+                RegistrationDate = registration.RegistrationDate,
+                RegistrationStatus = registration.Event.Status.ToString(),
+
+                TicketPrice = registration.Event.Price,
+                TicketCurrency = "USD",
+                Description = registration.Event.Description ?? "N/A",
+                RegistrationCreatedBy = registration.Event.Organizer.FullName ?? "N/A"
+            };
+
+            return await _pdfService.GenerateRegistrationPdfAsync(dto);
         }
     }
 }

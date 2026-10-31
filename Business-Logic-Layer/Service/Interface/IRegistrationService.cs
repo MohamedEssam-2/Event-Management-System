@@ -18,7 +18,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<ServiceResponse<bool>> DeleteRegistration(int id);
         public Task<ServiceResponse<List<ReadAllRegistrationDTO>>> GetMyRegistration();
         public Task<ServiceResponse<PagedResultDTO<ReadAllRegistrationDTO>>> GetRegistrationsByEventId(int eventId, int PageIndex, int PageSize);
-
+        public Task<byte[]> ExportRegistrationAsPdfAsync(int registrationId);
 
     }
 }

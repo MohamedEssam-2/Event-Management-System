@@ -9,6 +9,7 @@ using Business_Logic_Layer.Service.Implementation;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QuestPDF.Infrastructure;
 
 namespace Business_Logic_Layer
 {
@@ -34,6 +35,8 @@ namespace Business_Logic_Layer
             Services.AddScoped<IOrderService, OrderService>();
             Services.AddScoped<IPaymentService, PaymentService>();
             Services.AddScoped<ICacheService, CacheService>();
+            Services.AddHttpClient<IRegistrationPdfService, RegistrationPdfService>();
+            QuestPDF.Settings.License = LicenseType.Community;
 
             return Services;
         }

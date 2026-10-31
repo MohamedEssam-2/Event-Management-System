@@ -20,7 +20,8 @@ namespace Presentation_Logic_Layer
         {
             var builder = WebApplication.CreateBuilder(args);
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
-             builder.Host.UseSerilog();
+            Serilog.Debugging.SelfLog.Enable(Console.Error);
+            builder.Host.UseSerilog();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -116,6 +117,7 @@ namespace Presentation_Logic_Layer
             builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 
             var app = builder.Build();
+
 
             app.UseSerilogRequestLogging();
 
