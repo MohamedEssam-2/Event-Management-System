@@ -11,6 +11,9 @@ namespace Data_Access_Layer.Models
    
         public DateTime? RegistrationDate { get; set; }
 
+        // UTC time the event reminder email was queued for this registration (null = not sent yet)
+        public DateTime? ReminderSentAt { get; set; }
+
         // Foreign key to Event
         public int EventId { get; set; }
         public Event Event { get; set; } = null!;

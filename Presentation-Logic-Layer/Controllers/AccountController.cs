@@ -1,4 +1,5 @@
-﻿using Business_Logic_Layer.DTO.AccountDTO;
+﻿using System.Security.Claims;
+using Business_Logic_Layer.DTO.AccountDTO;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,6 +86,27 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(new MessageDTO
             {
                 Message = "User has been deleted successfully"
+            });
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult GetCurrentUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var name = User.FindFirstValue(ClaimTypes.Name) ?? User.FindFirstValue("name");
+            var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            return Ok(new
+            {
+                UserId = userId,
+                Email = email,
+                FullName = name,
+                Roles = roles,
+                IsAuthenticated = User.Identity?.IsAuthenticated ?? false
             });
         }
 

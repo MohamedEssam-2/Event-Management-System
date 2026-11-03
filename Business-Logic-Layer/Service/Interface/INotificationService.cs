@@ -10,5 +10,6 @@ namespace Business_Logic_Layer.Service.Interface
     {
         public Task RegistrationNotification(string userEmail, string userName, string eventName, DateTime eventDate, string eventLocation);
         public Task PaymentCompletedNotification(string userEmail, string userName, string eventName, DateTime eventDate, string eventLocation, decimal amount);
+        public Task EventReminderNotification(string userEmail, string userName, string eventName, DateTime eventDate, string eventLocation);
     }
 }

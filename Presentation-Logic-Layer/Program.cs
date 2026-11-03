@@ -136,6 +136,7 @@ namespace Presentation_Logic_Layer
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate<ReminderJob>("send-event-reminders", job => job.RunAsync(), "*/10 * * * *");
             app.MapControllers();
 
 

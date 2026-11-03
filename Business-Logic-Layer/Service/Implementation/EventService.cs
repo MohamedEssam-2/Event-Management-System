@@ -74,6 +74,8 @@ namespace Business_Logic_Layer.Service.Implementation
             {
                 throw new EventNotFoundException(id);
             }
+            if (entity.IsDeleted)
+                throw new EventDeletedException(id);
             if (!string.IsNullOrWhiteSpace(entity.PublicId))
             {
                 await _uplaodService.DeleteImageAsync(entity.PublicId);
@@ -86,6 +88,7 @@ namespace Business_Logic_Layer.Service.Implementation
             if (result > 0)
             {
                 await _cacheService.RemoveByPrefixAsync("/api/Event");
+                _logger.LogInformation("Event {EventId} deleted successfully by user {UserId}", id, _currentUser.UserId);
             }
             return result > 0;
         }
@@ -157,6 +160,8 @@ namespace Business_Logic_Layer.Service.Implementation
             if (eventDTO.Name != null)
                 entity.Name = eventDTO.Name;
 
+            var dateChanged = eventDTO.Date.HasValue && eventDTO.Date.Value != entity.Date;
+
             if (eventDTO.Date.HasValue)
                 entity.Date = eventDTO.Date.Value;
 
@@ -203,7 +208,19 @@ namespace Business_Logic_Layer.Service.Implementation
             entity.UpdatedBy = _currentUser.FullName;
             entity.UpdatedAt = DateTime.UtcNow;
 
+            if (dateChanged)
+            {
+                var registrations = await _unitOfWork.GetRepository<Registration, int>()
+                    .GetAll(new EventRegistrationsSpecification(id));
+                foreach (var registration in registrations)
+                {
+                    registration.ReminderSentAt = null;
+                }
+            }
+
+
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation("Event {EventId} updated successfully by user {UserId}", id, _currentUser.UserId);
             await _cacheService.RemoveByPrefixAsync("/api/Event");
 
             if (eventDTO.Image is not null &&  !string.IsNullOrWhiteSpace(oldPublicId))

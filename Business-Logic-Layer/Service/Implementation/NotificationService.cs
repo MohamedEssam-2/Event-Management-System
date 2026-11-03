@@ -39,6 +39,22 @@ namespace Business_Logic_Layer.Service.Implementation
             _backgroundJobService.EnqueueEmail(userEmail,subject,body);
             return Task.CompletedTask;
         }
+
+        public Task EventReminderNotification(string userEmail, string userName, string eventName, DateTime eventDate, string eventLocation)
+        {
+            var subject = $"Reminder: {eventName} is coming up";
+
+       
+            var body = $@"
+                      <h2>Hello {System.Net.WebUtility.HtmlEncode(userName)},</h2>
+                      <p>This is a reminder that you are registered for <b>{System.Net.WebUtility.HtmlEncode(eventName)}</b>, which starts soon.</p>
+                      <p><b>Date:</b> {eventDate:dd/MM/yyyy hh:mm tt} (UTC)</p>
+                      <p><b>Location:</b> {System.Net.WebUtility.HtmlEncode(eventLocation)}</p>
+                      <p>We look forward to seeing you there!</p>";
+
+            _backgroundJobService.EnqueueEmail(userEmail, subject, body);
+            return Task.CompletedTask;
+        }
     }
 
 
