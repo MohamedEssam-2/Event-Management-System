@@ -37,6 +37,7 @@ namespace Business_Logic_Layer
             Services.AddScoped<ICacheService, CacheService>();
             Services.AddHttpClient<IRegistrationPdfService, RegistrationPdfService>();
             Services.AddScoped<IReminderService, ReminderService>();
+            Services.AddScoped<IExternalLoginService, ExternalLoginService>();
             QuestPDF.Settings.License = LicenseType.Community;
 
             return Services;

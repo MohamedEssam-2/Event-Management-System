@@ -132,13 +132,13 @@ namespace Presentation_Logic_Layer
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseHangfireDashboard();
             RecurringJob.AddOrUpdate<ReminderJob>("send-event-reminders", job => job.RunAsync(), "*/10 * * * *");
             app.MapControllers();
-
 
             app.Run();
         }

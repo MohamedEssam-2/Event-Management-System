@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Business_Logic_Layer.DTO.AccountDTO;
+using Business_Logic_Layer.DTO.AccountDTO.External_LoginDto;
 using Business_Logic_Layer.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,15 @@ namespace Presentation_Logic_Layer.Controllers
             return Ok(user);
 
         }
+
+        [HttpPost("google")]
+        [AllowAnonymous]
+        public async Task<ActionResult<UserDTO>> GoogleLogin(GoogleLoginDTO dto)
+        {
+            var user = await _accountService.GoogleLogin(dto);
+            return Ok(user);
+        }
+
         [HttpPost("RefreshToken")]
         public async Task<ActionResult<UserDTO>> RefreshToken(string token)
         {

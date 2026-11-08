@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
+using Business_Logic_Layer.DTO.AccountDTO.External_LoginDto;
 
 namespace Business_Logic_Layer.Service.Interface
 {
@@ -18,6 +19,7 @@ namespace Business_Logic_Layer.Service.Interface
         public Task<UserDTO> RefreshToken(string token);
         public Task<MessageDTO> ForgotPassword(string email);
         public Task<MessageDTO> ResetPassword(ResetPasswordDTO dto);
+        public Task<UserDTO> GoogleLogin(GoogleLoginDTO dto);
 
     }
 }

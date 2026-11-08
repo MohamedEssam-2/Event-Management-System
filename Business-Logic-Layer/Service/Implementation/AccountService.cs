@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Business_Logic_Layer.DTO.AccountDTO;
+using Business_Logic_Layer.DTO.AccountDTO.External_LoginDto;
 using Business_Logic_Layer.Exceptions;
 using Business_Logic_Layer.Exceptions.UserExceptions;
 using Business_Logic_Layer.Service.Interface;
@@ -22,7 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Business_Logic_Layer.Service.Implementation
 {
-    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService, IRefreshTokenService _refreshTokenService , IBackgroundJobService _backgroundJobService) : IAccountService
+    public class AccountService(UserManager<ApplicationUser> _userManager, IOptions<JwtOptions> _jwtoptions, IConfiguration _configuration, IEmailService _emailService, IRefreshTokenService _refreshTokenService , IBackgroundJobService _backgroundJobService , IExternalLoginService _externalLogin) : IAccountService
     {
         public async Task<MessageDTO> Register(RegisterDTO registerDTO)
         {
@@ -300,6 +301,85 @@ namespace Business_Logic_Layer.Service.Implementation
                 Message = "Password has been reset successfully."
             };
         }
+
+        public async Task<UserDTO> GoogleLogin(GoogleLoginDTO dto)
+        {
+            const string provider = "Google";
+
+            var info = await _externalLogin.ValidateGoogleTokenAsync(dto.IdToken);
+            if (info == null)
+            {
+                throw new UnauthorizedException("Invalid Google token. Please try again.");
+            }
+            if (!info.EmailVerified)
+            {
+                throw new UnauthorizedException("Your Google email is not verified.");
+            }
+
+            // 1) user already linked with this Google account
+            var user = await _userManager.FindByLoginAsync(provider, info.ProviderId);
+
+            if (user == null)
+            {
+                // 2) user registered before with the same email (normal register)
+                user = await _userManager.FindByEmailAsync(info.Email);
+
+                if (user == null)
+                {
+                    // 3) brand new user
+                    user = new ApplicationUser
+                    {
+                        FullName = info.FullName,
+                        UserName = info.Email,
+                        Email = info.Email,
+                        EmailConfirmed = true
+                    };
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        var errors = createResult.Errors.Select(e => e.Description).ToList();
+                        throw new BadRequestException(errors);
+                    }
+                    var roleResult = await _userManager.AddToRoleAsync(user, "Attendee");
+                    if (!roleResult.Succeeded)
+                    {
+                        await _userManager.DeleteAsync(user);
+                        var errors = roleResult.Errors.Select(e => e.Description).ToList();
+                        throw new BadRequestException(errors);
+                    }
+                }
+                else if (!user.EmailConfirmed)
+                {
+                    // Account was created by email/password but never confirmed.
+                    // Google verified the email, so we confirm it and drop the old password
+                    // (prevents someone from pre-registering with another person's email).
+                    if (await _userManager.HasPasswordAsync(user))
+                    {
+                        await _userManager.RemovePasswordAsync(user);
+                    }
+                    user.EmailConfirmed = true;
+                    await _userManager.UpdateAsync(user);
+                }
+
+                var loginResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, info.ProviderId, provider));
+                if (!loginResult.Succeeded)
+                {
+                    var errors = loginResult.Errors.Select(e => e.Description).ToList();
+                    throw new BadRequestException(errors);
+                }
+            }
+
+            var accessToken = await CreateTokenAsync(user);
+            var refreshToken = await _refreshTokenService.CreateRefreshToken(user.Id);
+            return new UserDTO
+            {
+                Email = user.Email!,
+                DispalyName = user.FullName,
+                Token = accessToken,
+                RefreshToken = refreshToken
+            };
+        }
     }
 }
+
 
