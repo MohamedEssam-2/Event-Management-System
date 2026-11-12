@@ -33,7 +33,7 @@ namespace Business_Logic_Layer.Service.Implementation
                     Email = payload.Email,
                     EmailVerified = payload.EmailVerified,
                     FullName = payload.Name ?? payload.Email,
-                    ProviderId = payload.Subject
+                    ProviderId = payload.Subject      
                 };
             }
             catch (InvalidJwtException ex)

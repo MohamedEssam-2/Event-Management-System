@@ -12,16 +12,16 @@ namespace Data_Access_Layer.Repository.Implementation
     public class UnitOfWork(EventContext _context) : IUnitOfWork
     {
         private readonly Dictionary<string, object> _repositories = [];
-        public IGenericRepo<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : BaseEntity<TKey>
+        public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : BaseEntity<TKey>
         {
             var RepoName = typeof(TEntity).Name;
             if (_repositories.ContainsKey(RepoName))
             {
-                return (IGenericRepo<TEntity, TKey>)_repositories[RepoName];
+                return (IGenericRepository<TEntity, TKey>)_repositories[RepoName];
             }
             else
             {
-                var repoInstance = new GenricRepo<TEntity, TKey>(_context);
+                var repoInstance = new GenericRepository<TEntity, TKey>(_context);
                 _repositories.Add(RepoName, repoInstance);
                 return repoInstance;
             }

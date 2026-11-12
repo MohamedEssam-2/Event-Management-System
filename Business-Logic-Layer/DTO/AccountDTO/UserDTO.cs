@@ -10,6 +10,7 @@ namespace Business_Logic_Layer.DTO.AccountDTO
     {
         public string DispalyName { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public Guid UserId { get; set; }
         public string Token { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
     }

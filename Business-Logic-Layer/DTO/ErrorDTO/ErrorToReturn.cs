@@ -12,7 +12,8 @@ namespace Business_Logic_Layer.DTO.ErrorDTO
         public int StatusCode { get; set; }
 
         public string ErrorMessage { get; set; } = string.Empty;
-
+        public string TraceId { get; set; } = string.Empty;
+        
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string>? Errors { get; set; }
     }

@@ -9,7 +9,7 @@ namespace Data_Access_Layer.Repository.Interface
 {
     public interface IUnitOfWork
     {
-        public IGenericRepo<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : BaseEntity<TKey>;
+        public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : BaseEntity<TKey>;
         Task<int> SaveChangesAsync();
     }
 }

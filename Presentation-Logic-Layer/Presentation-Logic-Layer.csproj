@@ -7,7 +7,11 @@
     <RootNamespace>Presentation_Logic_Layer</RootNamespace>
     <UserSecretsId>b1d891dc-1daa-4058-87de-2005af7debc6</UserSecretsId>
   </PropertyGroup>
-
+	
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />

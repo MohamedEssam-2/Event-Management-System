@@ -13,7 +13,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Data_Access_Layer.Repository.Implementation
 {
-    public class GenricRepo<TEntity, TKey>(EventContext _context) : IGenericRepo<TEntity, TKey> where TEntity : BaseEntity<TKey>
+    public class GenericRepository<TEntity, TKey>(EventContext _context) : IGenericRepository<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
         public async Task<TEntity> Create(TEntity entity)
         {

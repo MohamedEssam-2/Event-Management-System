@@ -10,7 +10,7 @@ using Data_Access_Layer.Specifications.Interface;
 namespace Data_Access_Layer.Repository.Interface
 {
   
-        public interface IGenericRepo<TEntity,TKey> where TEntity : BaseEntity<TKey>
+        public interface IGenericRepository<TEntity,TKey> where TEntity : BaseEntity<TKey>
         {
         public Task<IEnumerable<TEntity>> GetAll(ISpecification<TEntity,TKey>spec);
         public Task<List<TEntity>> GetAll();

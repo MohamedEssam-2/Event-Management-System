@@ -107,6 +107,7 @@ namespace Business_Logic_Layer.Service.Implementation
             return new UserDTO()
             {
                 Email = user.Email!,
+                UserId = Guid.Parse(user.Id),
                 DispalyName = user.FullName,
                 Token = accessToken,
                 RefreshToken = refreshToken
@@ -246,6 +247,7 @@ namespace Business_Logic_Layer.Service.Implementation
             return new UserDTO
             {
                 Email = user.Email!,
+                UserId = Guid.Parse(user.Id),
                 DispalyName = user.FullName,
                 Token = accessToken,
                 RefreshToken = newRefreshToken
@@ -374,6 +376,7 @@ namespace Business_Logic_Layer.Service.Implementation
             return new UserDTO
             {
                 Email = user.Email!,
+                UserId = Guid.Parse(user.Id),
                 DispalyName = user.FullName,
                 Token = accessToken,
                 RefreshToken = refreshToken

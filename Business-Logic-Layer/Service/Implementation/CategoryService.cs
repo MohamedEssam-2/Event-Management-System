@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business_Logic_Layer.DTO.CategoryDTO;
+using Business_Logic_Layer.DTO.PaginationDTO;
 using Business_Logic_Layer.Exceptions.CategoryExceptions;
 using Business_Logic_Layer.Service.Interface;
 using Data_Access_Layer.Models;
@@ -64,25 +65,33 @@ namespace Business_Logic_Layer.Service.Implementation
             
         }
 
-        public async Task<ServiceResponse<List<ReadCategoryDTO>>> GetAllCategories(string? Search,int PageIndex, int PageSize, string sortby)
+        public async Task<ServiceResponse<PagedResultDTO<ReadCategoryDTO>>> GetAllCategories(string? Search,int PageIndex, int PageSize, string sortby)
         {
             var spec = new CategoryWithEventSpecifications(Search , PageIndex, PageSize,sortby);
             var category=await _unitOfWork.GetRepository<Category, int>().GetAll(spec);
             if (category == null || !category.Any())
             {
-                return new ServiceResponse<List<ReadCategoryDTO>>
+                return new ServiceResponse<PagedResultDTO<ReadCategoryDTO>>
                 {
                     Success= false,
                     Message = "Cant Find Any Category ."
                 };
             }
                 var categoryDTO = _mapper.Map<List<ReadCategoryDTO>>(category);
-                return new ServiceResponse<List<ReadCategoryDTO>>
-                {
-                    Success = true,
-                    Data = categoryDTO,
-                    Message = "Category Found Successfully"
-                };
+            var totalCount = await _unitOfWork.GetRepository<Category, int>().CountAsync(spec);
+            var result= new PagedResultDTO<ReadCategoryDTO>
+            {
+                TotalCount = totalCount,
+                PageIndex = PageIndex,
+                PageSize = PageSize,
+                Data = categoryDTO
+            };
+            return new ServiceResponse<PagedResultDTO<ReadCategoryDTO>>
+            {
+                Success = true,
+                Data = result,
+                Message = "Categories Found Successfully"
+            };
         }
 
 

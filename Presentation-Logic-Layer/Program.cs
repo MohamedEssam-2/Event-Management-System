@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using Presentation_Logic_Layer.Background;
 using Serilog;
 using StackExchange.Redis;
+using System.Reflection;
 
 namespace Presentation_Logic_Layer
 {
@@ -38,6 +39,10 @@ namespace Presentation_Logic_Layer
                     Version = "1.0",
                     Description = "REST API for Event Management System"
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -121,7 +126,7 @@ namespace Presentation_Logic_Layer
 
             app.UseSerilogRequestLogging();
 
-            app.UseMiddleware<Presentation_Logic_Layer.Middleware.Middleware>();
+            app.UseMiddleware<Presentation_Logic_Layer.Middleware.ExceptionHandlingMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
