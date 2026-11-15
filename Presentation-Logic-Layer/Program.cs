@@ -12,6 +12,9 @@ using Presentation_Logic_Layer.Background;
 using Serilog;
 using StackExchange.Redis;
 using System.Reflection;
+using Data_Access_Layer.Database;
+using Microsoft.EntityFrameworkCore;
+using Data_Access_Layer.Database.Seed;
 
 namespace Presentation_Logic_Layer
 {
@@ -123,6 +126,14 @@ namespace Presentation_Logic_Layer
 
             var app = builder.Build();
 
+
+            // Docker-only: apply migrations + seed roles & default admin.
+            // Opt-in via env var DbInitializer__Enabled=true (set only in docker-compose).
+            // Must run before Hangfire touches the DB.
+            if (builder.Configuration.GetValue<bool>("DbInitializer:Enabled"))
+            {
+                DbInitializer.InitializeAsync(app.Services).GetAwaiter().GetResult();
+            }
 
             app.UseSerilogRequestLogging();
 

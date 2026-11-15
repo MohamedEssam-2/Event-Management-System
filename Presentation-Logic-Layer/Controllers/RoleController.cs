@@ -154,14 +154,14 @@ namespace Presentation_Logic_Layer.Controllers
                 return Ok(new ServiceResponse<bool>
                 {
                     Success = true,
-                    Message = "All Roles Removed Successfuly"
+                    Message = "Role Removed Successfuly"
                 });
             }
 
             return BadRequest(new ServiceResponse<bool>
             {
                 Success = false,
-                Message = "Failed To Remove All Roles"
+                Message = "Failed To Remove Role"
             });
         }
 

@@ -1,0 +1,64 @@
+
+services:
+  presentation-logic-layer:
+    build:
+      context: .
+      dockerfile: Presentation-Logic-Layer/Dockerfile
+    container_name: event-management-api
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      DbInitializer__Enabled: "true"
+    restart: unless-stopped
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04
+    container_name: event-management-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -C -Q \"SELECT 1\" || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -Q \"SELECT 1\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    container_name: event-management-stripe-cli
+    command: >
+      listen
+      --api-key ${Stripe__SecretKey}
+      --events checkout.session.completed
+      --forward-to http://presentation-logic-layer:8080/api/Payment/webhook
+    depends_on:
+      - presentation-logic-layer
+    restart: unless-stopped
+
+  seq:
+    image: datalust/seq:latest
+    container_name: event-management-seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "YourStrongPassword123!"
+    ports:
+      - "5342:80"
+    volumes:
+      - seq_data:/data
+    restart: unless-stopped
+
+volumes:
+  mssql_data:
+  seq_data:

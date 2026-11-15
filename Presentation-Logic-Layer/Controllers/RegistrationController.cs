@@ -138,7 +138,7 @@ namespace Presentation_Logic_Layer.Controllers
         /// </remarks>
         [HttpGet("{id:int}/export-pdf")]
         [Authorize(Roles = "Attendee,Admin")]
-        public async Task<ActionResult<FileContentResult>> ExportRegistrationAsPdf(int id)
+        public async Task<IActionResult> ExportRegistrationAsPdf(int id)
         {
             try
             {
